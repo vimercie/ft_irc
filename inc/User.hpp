@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 13:48:21 by vimercie          #+#    #+#             */
-/*   Updated: 2023/09/25 14:56:30 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/11/15 15:10:11 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include <string>
 # include <vector>
 # include <algorithm>
+
+class Channel;
 
 class	User
 {
