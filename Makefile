@@ -2,7 +2,7 @@ NAME=		ircserv
 
 VPATH=		src/
 
-SRC=		main.cpp		\
+SRC=		main.cpp	\
 			Server.cpp
 
 INCDIR=		inc/

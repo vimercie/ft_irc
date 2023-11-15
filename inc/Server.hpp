@@ -6,45 +6,36 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/09/25 14:47:54 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/11/15 18:20:49 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
-# define SERVER_HPP
-# define BUFFER_SIZE 1024
+#define SERVER_HPP
 
-# include <iostream>
-# include <unistd.h>
-# include <cstdlib>
-# include <string>
-# include <cstring>
-# include <vector>
-# include <stdexcept>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <netdb.h>
-
-class Channel;
-class User;
+#include <iostream>
+#include <string>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <unistd.h>
+#include <cstring>
+#include <cstdlib>
 
 class Server
 {
-	private:
-		int 					_portno;
-		std::string				_password;
-		sockaddr_in 			_addr;
-		socklen_t 				_addrLen;
+private:
+    int 				sockfd;
+    struct sockaddr_in	servaddr;
+    int 				port;
+    std::string 		password;
+public:
+    Server(int port, const std::string& password);
+    ~Server();
 
-		std::vector<User>		_users;
-		std::vector<Channel>	_channels;
-	public:
-		Server(const std::string& port, const std::string& password);
-		~Server();
-
-		void init();
-		void run();
+    void	acceptConnections();
+    void	communicate(int connfd);
 };
 
 #endif

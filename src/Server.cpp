@@ -5,75 +5,93 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/24 13:07:18 by vimercie          #+#    #+#             */
-/*   Updated: 2023/09/25 14:48:18 by vimercie         ###   ########lyon.fr   */
+/*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
+/*   Updated: 2023/11/15 18:27:12 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
-#include "../inc/Channel.hpp"
 
-Server::Server(const std::string& port, const std::string& password)
+Server::Server(int port, const std::string& password) : port(port), password(password)
 {
-	_portno = std::atoi(port.c_str());
-	_password = password;
+    // Création du socket
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd == -1) {
+        std::cerr << "Erreur de création du socket" << std::endl;
+        exit(1);
+    }
 
-	bzero(&_addr, sizeof(_addr));
-	_addr.sin_family = PF_INET;
-	_addr.sin_port = htons(_portno);
-	_addr.sin_addr.s_addr = INADDR_ANY;
-	_addrLen = sizeof(_addr);
+    // Configuration de l'adresse du serveur
+    memset(&servaddr, 0, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_port = htons(this->port);
 
-	_channels.push_back(Channel("general"));
+    // Liaison du socket à l'adresse du serveur
+    if (bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0) {
+        std::cerr << "Erreur de liaison du socket" << std::endl;
+        exit(1);
+    }
 
-	if (_portno < 1024 || _portno > 65535)
-		throw std::runtime_error("Invalid port number");
-	if (_password.size() > 50)
-		throw std::runtime_error("Password too long");
+    // Mise en écoute du serveur
+    if (listen(sockfd, 5) != 0) {
+        std::cerr << "Erreur lors de la mise en écoute" << std::endl;
+        exit(1);
+    }
 }
 
-Server::~Server() {}
-
-void Server::init()
+void Server::acceptConnections()
 {
-	int	sockfd = socket(PF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in cli;
+    int len = sizeof(cli);
+    int connfd;
 
-	if (sockfd == -1)
-		throw std::runtime_error("socket creation failed");
-	if (bind(sockfd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
-		throw std::runtime_error("socket binding failed");
-	if (listen(sockfd, 10) == -1)
-		throw std::runtime_error("Unable to listen to socket");
+    std::cout << "En attente de connexions..." << std::endl;
 
-	std::cout << "Server is listening on port " << _portno << std::endl;
+    // Accepter une connexion client
+    connfd = accept(sockfd, (struct sockaddr *)&cli, (socklen_t *)&len);
+    if (connfd < 0) {
+        std::cerr << "Serveur accepte erreur de connexion" << std::endl;
+        exit(1);
+    } else {
+        std::cout << "Client connecté." << std::endl;
+    }
 
-	while (1)
+    // Communiquer avec le client
+    communicate(connfd);
+
+    // Fermeture de la connexion client
+    close(connfd);
+}
+
+void Server::communicate(int connfd)
+{
+    const int bufferSize = 256;
+    char buffer[bufferSize];
+
+    while (true)
 	{
-		sockaddr_in	clientAddr;
-		socklen_t	clientAddrLen = sizeof(clientAddr);
-		int			newsockfd = accept(sockfd, (struct sockaddr *)&clientAddr, &clientAddrLen);
+        memset(buffer, 0, bufferSize);
 
-		if (newsockfd == -1)
-			throw std::runtime_error("Unable to accept connection");
+        // Réception d'un message du client
+        int bytesReceived = read(connfd, buffer, bufferSize - 1);
+        if (bytesReceived <= 0) {
+            // Si aucune donnée n'est reçue ou si une erreur se produit, sortez de la boucle
+            break;
+        }
 
-		std::cout << "New connection" << std::endl;
+        // Afficher le message reçu dans le terminal
+        std::cout << "Message reçu : " << buffer << std::endl;
 
-		char buffer[BUFFER_SIZE];
-		bzero(buffer, BUFFER_SIZE);
+        // Envoyer une réponse au client
+        const char* response = "Message reçu.";
+        write(connfd, response, strlen(response));
+    }
 
-		if (recv(newsockfd, buffer, BUFFER_SIZE, 0) == -1)
-			throw std::runtime_error("Error receiving message");
+    std::cout << "Connexion fermée avec le client." << std::endl;
+}
 
-		std::cout << "Client: " << buffer << std::endl;
-
-		bzero(buffer, BUFFER_SIZE);
-
-		std::cout << "Enter message: ";
-
-		std::cin >> buffer;
-		if (send(newsockfd, buffer, strlen(buffer), 0) == -1)
-			throw std::runtime_error("Error sending message");
-
-		close(newsockfd);
-	}
+Server::~Server()
+{
+    close(sockfd);
 }
