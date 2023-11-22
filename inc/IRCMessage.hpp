@@ -1,39 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   User.hpp                                           :+:      :+:    :+:   */
+/*   IRCMessage.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/25 13:48:21 by vimercie          #+#    #+#             */
-/*   Updated: 2023/11/15 15:10:11 by vimercie         ###   ########lyon.fr   */
+/*   Created: 2023/11/22 17:15:45 by vimercie          #+#    #+#             */
+/*   Updated: 2023/11/22 17:26:05 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef USER_HPP
-# define USER_HPP
+#ifndef IRC_MESSAGE_H
+# define IRC_MESSAGE_H
 
 # include <iostream>
 # include <string>
+# include <cstring>
 # include <vector>
-# include <algorithm>
 
-class Channel;
-
-class	User
+class IRCMessage
 {
 	private:
-		std::string				_name;
-		std::vector<Channel>	_channels;
+		std::string					prefix;
+		std::string					command;
+		std::vector<std::string>	parameters;
+		std::string					trailing;
+
 	public:
-		User(const std::string& username);
-		~User();
+		IRCMessage(const std::string& message);
+		~IRCMessage();
 
-		std::string					getUsername() const;
-		std::vector<std::string>	getChannels() const;
-
-		void						addChannel(const std::string& channel);
-		void 						removeChannel(const std::string& channel);
+		void parseMessage(const std::string& message);
+		void displayParts() const;
 };
 
 #endif

@@ -2,8 +2,10 @@ NAME=		ircserv
 
 VPATH=		src/
 
-SRC=		main.cpp	\
-			Server.cpp
+SRC=		main.cpp		\
+			Server.cpp		\
+			Channel.cpp		\
+			IRCMessage.cpp
 
 INCDIR=		inc/
 

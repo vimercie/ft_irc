@@ -1,36 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Channel.hpp                                        :+:      :+:    :+:   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/11/22 17:29:34 by vimercie         ###   ########lyon.fr   */
+/*   Created: 2023/09/25 13:48:21 by vimercie          #+#    #+#             */
+/*   Updated: 2023/11/22 16:54:13 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CHANNEL_HPP
-# define CHANNEL_HPP
-
-# define CHANNEL_NAME_MAX_LENGTH 50
+#ifndef USER_HPP
+# define USER_HPP
 
 # include <iostream>
 # include <string>
 # include <vector>
-# include <map>
 # include <algorithm>
 
-class Channel
-{
-	typedef	void (Channel::*cmd)(void);
+class Channel;
 
+class	Client
+{
 	private:
-		std::string 				name;
-		std::vector<std::string>	clients;
+		std::string	nickname;
+		std::string	username;
+		std::string	host;
 	public:
-		Channel(std::string name);
-		~Channel();
+		Client(const std::string& username);
+		~Client();
+
+		std::string					getUsername() const;
+		std::vector<std::string>	getChannels() const;
+
+		void						addChannel(const std::string& channel);
+		void 						removeChannel(const std::string& channel);
 };
 
 #endif
