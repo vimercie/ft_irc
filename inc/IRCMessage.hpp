@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 17:15:45 by vimercie          #+#    #+#             */
-/*   Updated: 2023/11/22 17:26:05 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/11/28 18:55:40 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <string>
 # include <cstring>
 # include <vector>
+# include <algorithm>
 
 class IRCMessage
 {
@@ -31,7 +32,11 @@ class IRCMessage
 		~IRCMessage();
 
 		void parseMessage(const std::string& message);
-		void displayParts() const;
+		std::string					parsePrefix(const std::string& message) const;
+		std::string					parseCommand(const std::string& message) const;
+		std::vector<std::string>	parseParameters(const std::string& message) const;
+		std::string					parseTrailing(const std::string& message) const;
+		// void displayParts() const;
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/11/22 17:33:08 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/11/28 18:42:13 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,11 @@ void Server::communicate(int connfd)
 		bufferstr = buffer;
 
         // Afficher le message reçu dans le terminal
-        std::cout << buffer;
+        std::cout << "BUFFER = " << buffer << std::endl;
 
 		IRCMessage	message(bufferstr);
+
+		std::cout << std::endl;
     }
 
     std::cout << "Connexion fermée avec le client." << std::endl;
