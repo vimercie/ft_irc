@@ -19,6 +19,7 @@ IRCmsg::IRCmsg(const std::string& message)
 
 IRCmsg::~IRCmsg() {}
 
+// Conversion de la string en IRCmsg
 void IRCmsg::fromString(const std::string& message)
 {
 	std::string::const_iterator it = message.begin();
@@ -59,28 +60,23 @@ std::string::const_iterator	IRCmsg::parseParameters(std::string::const_iterator&
 	return it;
 }
 
-std::string::const_iterator	IRCmsg::getNextWord(std::string::const_iterator& start, const std::string& message, std::string& buffer)
+std::string::const_iterator	IRCmsg::getNextWord(std::string::const_iterator& it, const std::string& message, std::string& buffer)
 {
-	// clear le buffer
-	if (!buffer.empty())
-		buffer.clear();
-
 	// skip les espaces
-	while (isspace(*start) && start != message.end())
-		start++;
+	while (isspace(*it) && it != message.end())
+		it++;
 
-	// si on arrive à la fin du message
-	if (start == message.end())
-		return start;
+	if (it == message.end())
+		return it;
 
-    std::string::const_iterator end = start;
+    std::string::const_iterator start = it;
 
-    while (!isspace(*end) && end != message.end())
-        end++;
+    while (!isspace(*it) && it != message.end())
+        it++;
 
-    buffer = std::string(start, end);
+    buffer = std::string(start, it);
 
-	return end;
+	return it;
 }
 
 void	IRCmsg::displayMessage()
