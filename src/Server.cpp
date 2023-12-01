@@ -6,12 +6,12 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/11/28 18:42:13 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/01 17:38:14 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
-#include "../inc/IRCMessage.hpp"
+#include "../inc/IRCmsg.hpp"
 
 Server::Server(int port, const std::string& password) : port(port), password(password)
 {
@@ -90,7 +90,11 @@ void Server::communicate(int connfd)
         // Afficher le message reçu dans le terminal
         std::cout << "BUFFER = " << buffer << std::endl;
 
-		IRCMessage	message(bufferstr);
+		IRCmsg	message(bufferstr);
+		message.displayMessage();
+
+		// // Envoyer le message au client
+		// write(connfd, buffer, bytesReceived);
 
 		std::cout << std::endl;
     }

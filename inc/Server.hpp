@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/11/22 17:22:40 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/01 17:37:30 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include <cstring>
 #include <cstdlib>
 
-class IRCMessage;
+class IRCmsg;
 
 class Server
 {

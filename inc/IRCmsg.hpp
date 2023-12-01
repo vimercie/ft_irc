@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   IRCMessage.hpp                                     :+:      :+:    :+:   */
+/*   IRCmsg.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 17:15:45 by vimercie          #+#    #+#             */
-/*   Updated: 2023/11/28 18:55:40 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/01 17:31:09 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <vector>
 # include <algorithm>
 
-class IRCMessage
+class IRCmsg
 {
 	private:
 		std::string					prefix;
@@ -28,15 +28,17 @@ class IRCMessage
 		std::string					trailing;
 
 	public:
-		IRCMessage(const std::string& message);
-		~IRCMessage();
+		IRCmsg(const std::string& message);
+		~IRCmsg();
 
-		void parseMessage(const std::string& message);
-		std::string					parsePrefix(const std::string& message) const;
-		std::string					parseCommand(const std::string& message) const;
-		std::vector<std::string>	parseParameters(const std::string& message) const;
-		std::string					parseTrailing(const std::string& message) const;
-		// void displayParts() const;
+	// parsing
+		void	fromString(const std::string& message);
+
+		std::string::const_iterator	parseParameters(std::string::const_iterator& it, const std::string& message);
+		std::string::const_iterator	getNextWord(std::string::const_iterator& start, const std::string& message, std::string& buffer);
+
+	// debug
+		void	displayMessage();
 };
 
 #endif
