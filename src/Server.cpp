@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/01 17:44:03 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/02 15:58:09 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,24 +44,28 @@ Server::Server(int port, const std::string& password) : port(port), password(pas
 	}
 
 	// Initialisation du poll
-	for (int i = 0; i < MAX_CLIENTS; i++) {
+	for (int i = 0; i < MAX_CLIENTS; i++)
 		fds[i].fd = -1;
-	}
+
 	fds[0].fd = sockfd;
     fds[0].events = POLLIN;
 	nfds = 1;
 	std::cout << "Serveur lancé sur le port " << port << std::endl;
 }
 
-void Server::acceptConnections() {
+void Server::acceptConnections()
+{
     struct sockaddr_in cli;
     socklen_t len = sizeof(cli);
     int connfd = accept(sockfd, (struct sockaddr *)&cli, &len);
 
-    if (connfd >= 0) {	
+    if (connfd >= 0)
+	{
 		std::cout << "Nouvelle connexion" << std::endl;
-        for (int i = 1; i < nfds; i++) {
-            if (fds[i].fd == -1) {
+        for (int i = 1; i < MAX_CLIENTS + 1; i++)
+		{
+            if (fds[i].fd == -1)
+			{
                 fds[i].fd = connfd;
                 fds[i].events = POLLIN;
 				nfds++;
@@ -73,40 +77,45 @@ void Server::acceptConnections() {
 
 void Server::communicate()
 {
-	std::cout << "Communicate" << std::endl;
-    for (int i = 1; i < nfds; i++) {
-        if (fds[i].revents & POLLIN) {
+    for (int i = 1; i < nfds; i++)
+	{
+        if (fds[i].revents & POLLIN)
+		{
             char buffer[1024];
             memset(buffer, 0, sizeof(buffer));
             ssize_t bytes_read = recv(fds[i].fd, buffer, sizeof(buffer), 0);
 
-            if (bytes_read > 0) {
+            if (bytes_read > 0)
+			{
                 std::string message(buffer, bytes_read);
-                std::cout << "Message reçu : " << message << std::endl;
-            } else if (bytes_read == 0) {
+                std::cout << "Message reçu : " << message;
+            }
+			else if (bytes_read == 0)
+			{
                 std::cout << "Client déconnecté." << std::endl;
                 close(fds[i].fd);
                 fds[i].fd = -1;  // Marquer comme libre
-            } else {
-                std::cerr << "Erreur de lecture du socket client." << std::endl;
             }
+			else
+                std::cerr << "Erreur de lecture du socket client." << std::endl;
         }
     }
 }
 
 void	Server::serverLoop()
 {
-	while (true) {
+	while (true)
+	{
 		int ret = poll(fds, nfds, TIMEOUT);
 
-		if (ret < 0) {
+		if (ret < 0)
+		{
 			std::cerr << "Erreur de poll" << std::endl;
 			break;
 		}
 
-		if (fds[0].revents & POLLIN) {
+		if (fds[0].revents & POLLIN)
 			acceptConnections();
-		}
 		communicate();
 	}
 }
