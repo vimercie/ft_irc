@@ -34,6 +34,32 @@ void IRCmsg::fromString(const std::string& message)
 	getNextWord(it, message, trailing);
 }
 
+std::string IRCmsg::toString() const
+{
+	std::string message;
+
+	if (!prefix.empty())
+		message += ":" + prefix + " ";
+
+	message += command;
+
+	if (!parameters.empty())
+		message += " ";
+	for (std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end(); it++)
+	{
+		message += *it;
+		if (it + 1 != parameters.end())
+			message += " ";
+	}
+
+	if (!trailing.empty())
+		message += " :" + trailing;
+
+	message += "\r\n";
+
+	return message;
+}
+
 std::string::const_iterator	IRCmsg::parseParameters(std::string::const_iterator& it, const std::string& message)
 {
 	std::string param;
@@ -55,6 +81,7 @@ std::string::const_iterator	IRCmsg::parseParameters(std::string::const_iterator&
 			break ;
 
 		parameters.push_back(param);
+		param.clear();
 	}
 
 	return it;

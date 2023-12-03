@@ -32,7 +32,8 @@ class IRCmsg
 		~IRCmsg();
 
 	// parsing
-		void	fromString(const std::string& message);
+		void		fromString(const std::string& message);
+		std::string	toString() const;
 
 		std::string::const_iterator	parseParameters(std::string::const_iterator& it, const std::string& message);
 		std::string::const_iterator	getNextWord(std::string::const_iterator& start, const std::string& message, std::string& buffer);

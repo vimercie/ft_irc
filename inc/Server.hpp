@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/01 17:45:31 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/03 15:14:39 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,12 @@
 #include <poll.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <vector>
 
 #define TIMEOUT 500
 #define MAX_CLIENTS 10
 
-class IRCmsg;
+class Channel;
 
 class Server
 {
@@ -42,6 +43,8 @@ private:
 //poll
 	struct pollfd		fds[MAX_CLIENTS + 1];
 	int 				nfds;
+// channels
+	std::vector<Channel>	channels;
 
 public:
 	Server(int port, const std::string& password);

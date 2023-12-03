@@ -6,12 +6,13 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/02 15:58:09 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/03 15:15:14 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
 #include "../inc/IRCmsg.hpp"
+#include "../inc/Channel.hpp"
 
 Server::Server(int port, const std::string& password) : port(port), password(password)
 {
@@ -89,6 +90,10 @@ void Server::communicate()
 			{
                 std::string message(buffer, bytes_read);
                 std::cout << "Message reçu : " << message;
+
+				IRCmsg msg(message);
+				msg.displayMessage();
+				std::cout << std::endl;
             }
 			else if (bytes_read == 0)
 			{
