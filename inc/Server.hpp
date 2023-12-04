@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/03 15:14:39 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/03 19:39:15 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,16 @@ class Channel;
 class Server
 {
 private:
-//server
-	int 				sockfd;
-	struct sockaddr_in	servaddr;
-	int 				port;
-	std::string 		password;
-//poll
-	struct pollfd		fds[MAX_CLIENTS + 1];
-	int 				nfds;
+// server
+	std::string				name;
+// socket
+	int 					sockfd;
+	struct sockaddr_in		servaddr;
+	int 					port;
+	std::string 			password;
+// poll
+	struct pollfd			fds[MAX_CLIENTS + 1];
+	int 					nfds;
 // channels
 	std::vector<Channel>	channels;
 
@@ -50,6 +52,10 @@ public:
 	Server(int port, const std::string& password);
 	~Server();
 
+// getters
+	std::string	getName() const;
+
+	void	initialize();
 	void	acceptConnections();
 	void	communicate();
 	void	serverLoop();

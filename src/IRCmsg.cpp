@@ -12,6 +12,8 @@
 
 # include "../inc/IRCmsg.hpp"
 
+IRCmsg::IRCmsg() {}
+
 IRCmsg::IRCmsg(const std::string& message)
 {
 	fromString(message);
@@ -59,6 +61,26 @@ std::string IRCmsg::toString() const
 
 	return message;
 }
+
+// getters
+std::string IRCmsg::getPrefix() const {return prefix;}
+
+std::string IRCmsg::getCommand() const {return command;}
+
+std::vector<std::string> IRCmsg::getParameters() const {return parameters;}
+
+std::string IRCmsg::getTrailing() const {return trailing;}
+
+
+// setters
+void IRCmsg::setPrefix(const std::string& prefix) {this->prefix = prefix;}
+
+void IRCmsg::setCommand(const std::string& command) {this->command = command;}
+
+void IRCmsg::setParameters(const std::vector<std::string>& parameters) {this->parameters = parameters;}
+
+void IRCmsg::setTrailing(const std::string& trailing) {this->trailing = trailing;}
+
 
 std::string::const_iterator	IRCmsg::parseParameters(std::string::const_iterator& it, const std::string& message)
 {

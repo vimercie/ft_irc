@@ -6,15 +6,26 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/03 15:15:14 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/03 20:03:11 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
 #include "../inc/IRCmsg.hpp"
 #include "../inc/Channel.hpp"
+#include "../inc/Client.hpp"
 
 Server::Server(int port, const std::string& password) : port(port), password(password)
+{
+	initialize();
+}
+
+Server::~Server()
+{
+	close(sockfd);
+}
+
+void Server::initialize()
 {
 	// Création du socket
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -52,6 +63,9 @@ Server::Server(int port, const std::string& password) : port(port), password(pas
     fds[0].events = POLLIN;
 	nfds = 1;
 	std::cout << "Serveur lancé sur le port " << port << std::endl;
+
+	// Création du channel par défaut
+	channels.push_back(Channel("General"));
 }
 
 void Server::acceptConnections()
@@ -92,8 +106,7 @@ void Server::communicate()
                 std::cout << "Message reçu : " << message;
 
 				IRCmsg msg(message);
-				msg.displayMessage();
-				std::cout << std::endl;
+				channels[0].ircCmd(msg);
             }
 			else if (bytes_read == 0)
 			{
@@ -123,9 +136,4 @@ void	Server::serverLoop()
 			acceptConnections();
 		communicate();
 	}
-}
-
-Server::~Server()
-{
-	close(sockfd);
 }

@@ -28,13 +28,25 @@ class IRCmsg
 		std::string					trailing;
 
 	public:
+		IRCmsg();
 		IRCmsg(const std::string& message);
 		~IRCmsg();
 
-	// parsing
-		void		fromString(const std::string& message);
-		std::string	toString() const;
+	// getters
+		std::string					getPrefix() const;
+		std::string					getCommand() const;
+		std::vector<std::string>	getParameters() const;
+		std::string					getTrailing() const;
+	// setters
+		void						setPrefix(const std::string& prefix);
+		void						setCommand(const std::string& command);
+		void						setParameters(const std::vector<std::string>& parameters);
+		void						setTrailing(const std::string& trailing);
 
+		void						fromString(const std::string& message);
+		std::string					toString() const;
+
+	// parsing
 		std::string::const_iterator	parseParameters(std::string::const_iterator& it, const std::string& message);
 		std::string::const_iterator	getNextWord(std::string::const_iterator& start, const std::string& message, std::string& buffer);
 
