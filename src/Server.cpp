@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/03 20:03:11 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/05 02:32:36 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,21 +92,21 @@ void Server::acceptConnections()
 
 void Server::communicate()
 {
-    for (int i = 1; i < nfds; i++)
+    for (nfds_t i = 1; i < nfds; i++)
 	{
         if (fds[i].revents & POLLIN)
 		{
             char buffer[1024];
             memset(buffer, 0, sizeof(buffer));
-            ssize_t bytes_read = recv(fds[i].fd, buffer, sizeof(buffer), 0);
+            ssize_t bytes_read = recv(fds[i].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
 
             if (bytes_read > 0)
 			{
                 std::string message(buffer, bytes_read);
                 std::cout << "Message reçu : " << message;
 
-				IRCmsg msg(message);
-				channels[0].ircCmd(msg);
+				// IRCmsg msg(message);
+				// channels[0].ircCmd(msg);
             }
 			else if (bytes_read == 0)
 			{
@@ -124,7 +124,7 @@ void	Server::serverLoop()
 {
 	while (true)
 	{
-		int ret = poll(fds, nfds, TIMEOUT);
+		int ret = poll(fds, nfds, 0);
 
 		if (ret < 0)
 		{

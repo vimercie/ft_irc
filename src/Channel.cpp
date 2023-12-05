@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/03 20:20:24 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/05 01:28:51 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ void	Channel::ircCmd(const IRCmsg& msg)
 
 	if (it != cmds.end())
 		(this->*(it->second))(msg);
-	else
-		std::cout << "Commande inconnue" << std::endl;
+	// else
+	// 	std::cout << "Commande inconnue" << std::endl;
 }
 
 void	Channel::addClient(const std::string& nickname)
@@ -56,7 +56,7 @@ void	Channel::welcome(const IRCmsg& msg)
 	welcome.setPrefix("irc.42.fr");
 	welcome.setCommand("001");
 	welcome.setParameters(std::vector<std::string>(1, msg.getParameters()[0]));
-	welcome.setTrailing("Wesh wesh wesh " + msg.getParameters()[0] + "!" + msg.getParameters()[3]);
+	welcome.setTrailing("Wesh wesh wesh " + msg.getParameters()[0]);
 
 	std::cout << welcome.toString() << std::endl;
 }
@@ -78,20 +78,12 @@ void	Channel::nick(const IRCmsg& msg)
 
 void	Channel::user(const IRCmsg& msg)
 {
-	// std::cout << "TEEEEEEST" << std::endl;
-	// std::vector<Client>::iterator	it = std::find(clients.begin(), clients.end(), msg.getParameters()[0]);
-	// std::cout << "TEEEEEEST" << std::endl;
+	std::vector<Client>::iterator	it = std::find(clients.begin(), clients.end(), msg.getParameters()[0]);
 
-	// if (it == clients.end())
-	// {
-	// 	std::cout << "TEEEEEEST" << std::endl;
-	// 	return ;
-	// }
-	// else
-	// {
-	// 	it->setUsername(msg.getParameters()[0]);
-	// 	it->setRealname(msg.getParameters()[3]);
-	// }
+	if (it == clients.end())
+		return ;
+	else
+		it->setUsername(msg.getParameters()[0]);
 
 	welcome(msg);
 }

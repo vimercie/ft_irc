@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/03 19:39:15 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/05 02:22:00 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ private:
 	std::string 			password;
 // poll
 	struct pollfd			fds[MAX_CLIENTS + 1];
-	int 					nfds;
+	nfds_t 					nfds;
 // channels
 	std::vector<Channel>	channels;
 
