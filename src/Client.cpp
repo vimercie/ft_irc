@@ -3,16 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/03 19:34:23 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/06 16:22:31 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Client.hpp"
+#include "../inc/IRCmsg.hpp"
 
-Client::Client(const std::string& nickname) : nickname(nickname) {}
+Client::Client(int	socket)
+{
+	this->sock = socket;
+}
 
 Client::~Client() {}
 
@@ -26,4 +30,8 @@ void	Client::setUsername(const std::string& username) {this->username = username
 
 void	Client::setPassword(const std::string& password) {this->password = password;}
 
-void	Client::setRealname(const std::string& realname) {this->realname = realname;}
+void	Client::setRealname(const std::string& realname)
+{
+	if (!realname.empty())
+		this->realname = username;
+}

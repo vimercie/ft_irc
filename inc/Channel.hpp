@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/03 19:15:55 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/06 15:56:03 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 
 class Client;
 class IRCmsg;
+class Command;
 
 class Channel
 {
@@ -32,24 +33,20 @@ class Channel
 	private:
 		std::string 				name;
 		std::vector<Client>			clients;
+		// Command 					command;
 		std::map<std::string, cmd>	cmds;
 	public:
 		Channel(std::string name);
 		~Channel();
 
-		void	addClient(const std::string& nickname);
-		// void	removeClient(const std::string& nickname);
+		std::vector<Client>	getClients() const;
+
+		void	addClient(const Client& client);
+		void	removeClient(const std::string& nickname);
 
 		void	ircCmd(const IRCmsg& msg);
 
 		void	welcome(const IRCmsg& msg);
-		void	nick(const IRCmsg& msg);
-		void	user(const IRCmsg& msg);
-		void	join(const IRCmsg& msg);
-		void	kick(const IRCmsg& msg);
-		void	invite(const IRCmsg& msg);
-		void	topic(const IRCmsg& msg);
-		void	mode(const IRCmsg& msg);
 };
 
 #endif

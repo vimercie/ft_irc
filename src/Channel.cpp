@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/05 01:28:51 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/06 16:28:16 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,17 +21,11 @@ Channel::Channel(std::string name) : name(name)
 
 	if (name.length() > CHANNEL_NAME_MAX_LENGTH)
 		name = name.substr(0, CHANNEL_NAME_MAX_LENGTH);
-
-	cmds["NICK"] = &Channel::nick;
-	cmds["USER"] = &Channel::user;
-	// cmds["JOIN"] = &Channel::join;
-	// cmds["KICK"] = &Channel::kick;
-	// cmds["INVITE"] = &Channel::invite;
-	// cmds["TOPIC"] = &Channel::topic;
-	// cmds["MODE"] = &Channel::mode;
 }
 
 Channel::~Channel() {}
+
+std::vector<Client>	Channel::getClients() const {return clients;}
 
 void	Channel::ircCmd(const IRCmsg& msg)
 {
@@ -43,10 +37,18 @@ void	Channel::ircCmd(const IRCmsg& msg)
 	// 	std::cout << "Commande inconnue" << std::endl;
 }
 
-void	Channel::addClient(const std::string& nickname)
+void	Channel::addClient(const Client &client)
 {
-	clients.push_back(Client(nickname));
+	clients.push_back(client);
 }
+
+// void	Channel::removeClient(const std::string& nickname)
+// {
+// 	std::vector<Client>::iterator	it = std::find(clients.begin(), clients.end(), nickname);
+
+// 	if (it != clients.end())
+// 		clients.erase(it);
+// }
 
 void	Channel::welcome(const IRCmsg& msg)
 {
@@ -59,32 +61,5 @@ void	Channel::welcome(const IRCmsg& msg)
 	welcome.setTrailing("Wesh wesh wesh " + msg.getParameters()[0]);
 
 	std::cout << welcome.toString() << std::endl;
-}
-
-void	Channel::nick(const IRCmsg& msg)
-{
-	if (msg.getParameters().size() != 1
-		|| msg.getParameters()[0].empty()
-		|| msg.getParameters()[0].length() > NICKNAME_MAX_LENGTH)
-		return ;
-
-	std::vector<Client>::iterator	it = std::find(clients.begin(), clients.end(), msg.getParameters()[0]);
-
-	if (it == clients.end())
-		addClient(msg.getParameters()[0]);
-	else
-		it->setNickname(msg.getParameters()[0]);
-}
-
-void	Channel::user(const IRCmsg& msg)
-{
-	std::vector<Client>::iterator	it = std::find(clients.begin(), clients.end(), msg.getParameters()[0]);
-
-	if (it == clients.end())
-		return ;
-	else
-		it->setUsername(msg.getParameters()[0]);
-
-	welcome(msg);
 }
 

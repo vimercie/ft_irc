@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/05 02:22:00 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/06 16:34:33 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,11 @@
 #include <errno.h>
 #include <vector>
 
-#define TIMEOUT 500
+#define TIMEOUT 0
 #define MAX_CLIENTS 10
 
 class Channel;
+class Client;
 
 class Server
 {
@@ -55,10 +56,11 @@ public:
 // getters
 	std::string	getName() const;
 
-	void	initialize();
-	void	acceptConnections();
-	void	communicate();
-	void	serverLoop();
+	void					initialize();
+	void					acceptConnections();
+	void					communicate();
+	void					serverLoop();
+	Client					initClient(int i, struct pollfd* fds);
 };
 
 #endif

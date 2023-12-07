@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/05 02:32:36 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/06 16:25:45 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ void Server::acceptConnections()
 				nfds++;
                 break;
             }
-        }
+		}
     }
 }
 
@@ -94,6 +94,7 @@ void Server::communicate()
 {
     for (nfds_t i = 1; i < nfds; i++)
 	{
+
         if (fds[i].revents & POLLIN)
 		{
             char buffer[1024];
@@ -104,9 +105,13 @@ void Server::communicate()
 			{
                 std::string message(buffer, bytes_read);
                 std::cout << "Message reçu : " << message;
-
-				// IRCmsg msg(message);
-				// channels[0].ircCmd(msg);
+				IRCmsg msg(message);
+				if (msg.getCommand() == "NICK")
+				{
+					Client client(fds[i].fd);
+					client.setNickname(msg.getParameters()[0]);
+					channels[0].getClients().push_back(client);
+				}
             }
 			else if (bytes_read == 0)
 			{
@@ -120,11 +125,12 @@ void Server::communicate()
     }
 }
 
+
 void	Server::serverLoop()
 {
 	while (true)
 	{
-		int ret = poll(fds, nfds, 0);
+		int ret = poll(fds, nfds, TIMEOUT);
 
 		if (ret < 0)
 		{
