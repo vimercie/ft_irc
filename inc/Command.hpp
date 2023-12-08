@@ -3,19 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   Command.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:39:17 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/06 16:17:26 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/08 18:56:25 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef COMMAND_HPP
+# define COMMAND_HPP
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
+# define USER 1
+# define CHANNEL 2
+# define SERVER 3
+
+# include <iostream>
+# include <string>
+# include <vector>
+# include <map>
 
 class IRCmsg;
 class Client;
@@ -23,21 +28,22 @@ class Channel;
 
 class Command
 {
-	typedef int (Command::*cmd)(const IRCmsg&, Channel*, Client*);
+	typedef int (Command::*userCmd)(const IRCmsg&, Client*, Channel*);
 
 	private:
-		std::map<std::string, cmd>	cmds;
+		std::map<std::string, userCmd>	userCmds;
 	public:
-		Command(void);
+		Command(int type);
 		~Command();
 
-		int	exec(const IRCmsg& msg, Channel* channel, Client* client);
-
 	// users
-		int	cmd_nick(const IRCmsg& msg, Channel* channel, Client* client);
-		int	cmd_user(const IRCmsg& msg, Channel* channel, Client* client);
-		// int	cmd_pass(const IRCmsg& msg, Channel* channel);
+		int	nick(const IRCmsg& msg, Client* client, Channel* channel);
+		int	user(const IRCmsg& msg, Client* client, Channel* channel);
+
 	// channels
 
 	// server
+	
 };
+
+#endif

@@ -6,7 +6,8 @@ SRC=		main.cpp		\
 			Server.cpp		\
 			Channel.cpp		\
 			Client.cpp		\
-			IRCmsg.cpp
+			IRCmsg.cpp		\
+			Utils.cpp
 
 INCDIR=		inc/
 

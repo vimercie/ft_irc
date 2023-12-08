@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:13:05 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/06 16:22:05 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/08 18:33:53 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class Command;
 class	Client
 {
 	private:
-		int			sock;
+		int			socket;
 
 		std::string	nickname;
 		std::string	username;
@@ -37,6 +37,14 @@ class	Client
 		~Client();
 
 		bool	operator==(const Client& other) const;
+
+		// getters
+		int		getSocket() const;
+		std::string	getNickname() const;
+		std::string	getUsername() const;
+		std::string	getPassword() const;
+		std::string	getRealname() const;
+		std::string	getMode() const;
 
 		// setters
 		void	setNickname(const std::string& nickname);

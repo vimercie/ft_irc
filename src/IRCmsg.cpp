@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 # include "../inc/IRCmsg.hpp"
+# include "../inc/Utils.hpp"
 
 IRCmsg::IRCmsg() {}
 
@@ -20,6 +21,21 @@ IRCmsg::IRCmsg(const std::string& message)
 }
 
 IRCmsg::~IRCmsg() {}
+
+
+// getters
+std::string IRCmsg::getPrefix() const {return prefix;}
+std::string IRCmsg::getCommand() const {return command;}
+std::vector<std::string> IRCmsg::getParameters() const {return parameters;}
+std::string IRCmsg::getTrailing() const {return trailing;}
+
+
+// setters
+void IRCmsg::setPrefix(const std::string& prefix) {this->prefix = prefix;}
+void IRCmsg::setCommand(const std::string& command) {this->command = command;}
+void IRCmsg::setParameters(const std::vector<std::string>& parameters) {this->parameters = parameters;}
+void IRCmsg::setTrailing(const std::string& trailing) {this->trailing = trailing;}
+
 
 // Conversion de la string en IRCmsg
 void IRCmsg::fromString(const std::string& message)
@@ -62,26 +78,6 @@ std::string IRCmsg::toString() const
 	return message;
 }
 
-// getters
-std::string IRCmsg::getPrefix() const {return prefix;}
-
-std::string IRCmsg::getCommand() const {return command;}
-
-std::vector<std::string> IRCmsg::getParameters() const {return parameters;}
-
-std::string IRCmsg::getTrailing() const {return trailing;}
-
-
-// setters
-void IRCmsg::setPrefix(const std::string& prefix) {this->prefix = prefix;}
-
-void IRCmsg::setCommand(const std::string& command) {this->command = command;}
-
-void IRCmsg::setParameters(const std::vector<std::string>& parameters) {this->parameters = parameters;}
-
-void IRCmsg::setTrailing(const std::string& trailing) {this->trailing = trailing;}
-
-
 std::string::const_iterator	IRCmsg::parseParameters(std::string::const_iterator& it, const std::string& message)
 {
 	std::string param;
@@ -105,25 +101,6 @@ std::string::const_iterator	IRCmsg::parseParameters(std::string::const_iterator&
 		parameters.push_back(param);
 		param.clear();
 	}
-
-	return it;
-}
-
-std::string::const_iterator	IRCmsg::getNextWord(std::string::const_iterator& it, const std::string& message, std::string& buffer)
-{
-	// skip les espaces
-	while (isspace(*it) && it != message.end())
-		it++;
-
-	if (it == message.end())
-		return it;
-
-    std::string::const_iterator start = it;
-
-    while (!isspace(*it) && it != message.end())
-        it++;
-
-    buffer = std::string(start, it);
 
 	return it;
 }

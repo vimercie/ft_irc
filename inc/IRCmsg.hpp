@@ -26,7 +26,6 @@ class IRCmsg
 		std::string					command;
 		std::vector<std::string>	parameters;
 		std::string					trailing;
-
 	public:
 		IRCmsg();
 		IRCmsg(const std::string& message);
@@ -43,12 +42,12 @@ class IRCmsg
 		void						setParameters(const std::vector<std::string>& parameters);
 		void						setTrailing(const std::string& trailing);
 
+	// converters
 		void						fromString(const std::string& message);
 		std::string					toString() const;
 
 	// parsing
 		std::string::const_iterator	parseParameters(std::string::const_iterator& it, const std::string& message);
-		std::string::const_iterator	getNextWord(std::string::const_iterator& start, const std::string& message, std::string& buffer);
 
 	// debug
 		void	displayMessage();
