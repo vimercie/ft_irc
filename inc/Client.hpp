@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:13:05 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 16:57:58 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 18:08:23 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ class	Client
 		void	execCmd(const IRCmsg& msg);
 		void	nick(const IRCmsg& msg);
 		void	user(const IRCmsg& msg);
+		void	sendMsg(const IRCmsg& msg);
 
 		std::map<std::string, cmd>	cmds;
 };

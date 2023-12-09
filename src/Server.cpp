@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 17:30:17 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 19:27:06 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,13 +174,6 @@ void	Server::communicate()
 	}
 }
 
-void	Server::execCmd(const IRCmsg&  msg)
-{
-	std::string	cmd = msg.getCommand();
-
-	if (cmd == "PING")
-		ping(msg);
-}
 
 std::vector<IRCmsg*>	Server::readMsg(int fd)
 {
@@ -280,20 +273,91 @@ void	Server::welcome(Client* client)
 	sendMsg(client->getSocket().fd, msg.toString());
 }
 
-void	Server::ping(const IRCmsg& msg)
+Channel*	Server::getChannelByName(const std::string& name)
+{
+	for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); it++)
+		if ((*it)->getName() == name)
+			return *it;
+	return NULL;
+}
+
+void	Server::execCmd(const IRCmsg&  msg)
+{
+	std::string	cmd = msg.getCommand();
+
+	if (cmd == "JOIN")
+		join(msg);
+	if (cmd == "PRIVMSG")
+		privmsg(msg);
+	else
+		std::cout << "Commande inconnue : " << cmd << std::endl;
+}
+
+void Server::join(const IRCmsg& msg)
+{
+	std::vector<std::string>	params;
+	Channel*					channel;
+
+	params.push_back(msg.getParameters()[0]);
+
+	channel = getChannelByName(msg.getParameters()[0].substr(1));
+	std::cout << "Channel : " << msg.getParameters()[0].substr(1) << std::endl;
+	if (channel == NULL)
+	{
+		std::cout << "Channel " << msg.getParameters()[0] << " créé" << std::endl;
+		channel = new Channel(msg.getParameters()[0]);
+		channels.push_back(channel);
+	}
+	channel->addClient(msg.getClient());
+}
+
+void	Server::privmsg(const IRCmsg& msg)
 {
 	IRCmsg						response;
-	std::vector<std::string>	params;
+	Channel*					channel;
 
-	response.setPrefix(name);
+	channel = getChannelByName(msg.getParameters()[0].substr(1));
+	if (channel == NULL)
+	{
+		;
+	}
+	else
+	{
+		response.setPrefix(msg.getClient()->getNickname());
+		response.setCommand("PRIVMSG");
+		response.setParameters(msg.getParameters());
+		response.setTrailing(msg.getTrailing());
+		response.setClient(msg.getClient());
+		broadcast(response, channel->getClients());
+	}
+}
 
-	response.setCommand("PONG");
+void	Server::broadcast(const IRCmsg& msg)
+{
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+		if ((*it)->getSocket().fd != msg.getClient()->getSocket().fd)
+			sendMsg((*it)->getSocket().fd, msg.toString());
+}
 
-	params.push_back(name);
-	response.setParameters(params);
+void	Server::broadcast(const IRCmsg& msg, const std::vector<Client*>& clients)
+{
+	for (std::vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++)
+		if ((*it)->getSocket().fd != msg.getClient()->getSocket().fd)
+			sendMsg((*it)->getSocket().fd, msg.toString());
+}
 
-	response.setTrailing(msg.getTrailing());
+void	Server::broadcast(const IRCmsg& msg, const std::vector<Channel*>& channels)
+{
+	for (std::vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++)
+		broadcast(msg, (*it)->getClients());
+}
 
-	sendMsg(msg.getClient()->getSocket().fd, response.toString());
-	std::cout << response.toString();
+void	Server::broadcast(const IRCmsg& msg, const std::vector<Client*>& clients, const std::vector<Channel*>& channels)
+{
+	for (std::vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++)
+		if ((*it)->getSocket().fd != msg.getClient()->getSocket().fd)
+			sendMsg((*it)->getSocket().fd, msg.toString());
+
+	for (std::vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++)
+		broadcast(msg, (*it)->getClients());
 }

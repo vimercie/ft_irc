@@ -46,6 +46,7 @@ class IRCmsg
 		void						setCommand(const std::string& command);
 		void						setParameters(const std::vector<std::string>& parameters);
 		void						setTrailing(const std::string& trailing);
+		void						setClient(Client* client);
 
 	// converters
 		void						fromString(const std::string& message);

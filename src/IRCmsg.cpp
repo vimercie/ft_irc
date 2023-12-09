@@ -36,6 +36,7 @@ void IRCmsg::setPrefix(const std::string& prefix) {this->prefix = prefix;}
 void IRCmsg::setCommand(const std::string& command) {this->command = command;}
 void IRCmsg::setParameters(const std::vector<std::string>& parameters) {this->parameters = parameters;}
 void IRCmsg::setTrailing(const std::string& trailing) {this->trailing = trailing;}
+void IRCmsg::setClient(Client* client) {this->client = client;}
 
 
 // Conversion de la string en IRCmsg

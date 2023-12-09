@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 01:24:50 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 18:55:30 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,24 @@ Channel::~Channel()
 void	Channel::addClient(Client* client)
 {
 	clients.push_back(client);
+}
+
+std::string	Channel::getName(void) const
+{
+	return name;
+}
+
+std::string	Channel::getNamesList(void)
+{
+	std::string	result;
+
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+		result += (*it)->getNickname() + " ";
+
+	return result;
+}
+
+std::vector<Client*>	Channel::getClients(void) const
+{
+	return clients;
 }
