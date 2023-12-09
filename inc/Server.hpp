@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 17:05:26 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 17:18:47 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,9 @@ class Server
 		void					sendMsg(int fd, const std::string& msg);
 
 		void					welcome(Client* client);
+	// cmds
+		void					execCmd(const IRCmsg& msg);
+		void					ping(const IRCmsg& msg);
 };
 
 #endif

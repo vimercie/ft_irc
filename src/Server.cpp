@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 17:05:47 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 17:26:55 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,15 +167,25 @@ void	Server::communicate()
 				if ((*it)->getCommand().empty())
 					continue;
 				std::cout << (*it)->toString();
+				// Exécution des commandes
+				execCmd(*(*it));
 			}
 		}
 	}
 }
 
+void	Server::execCmd(const IRCmsg&  msg)
+{
+	std::string	cmd = msg.getCommand();
+
+	if (cmd == "PING")
+		ping(msg);
+}
+
 std::vector<IRCmsg*>	Server::readMsg(int fd)
 {
 	char					buffer[1024];
-	ssize_t					bytes_read;
+	ssize_t					bytes_read = 0;
 	std::vector<IRCmsg*>	res;
 
 	memset(buffer, 0, sizeof(buffer));
@@ -268,4 +278,22 @@ void	Server::welcome(Client* client)
 	msg.setTrailing("Wesh wesh wesh " + client->getNickname());
 
 	sendMsg(client->getSocket().fd, msg.toString());
+}
+
+void	Server::ping(const IRCmsg& msg)
+{
+	IRCmsg						response;
+	std::vector<std::string>	params;
+
+	response.setPrefix(name);
+
+	response.setCommand("PONG");
+
+	params.push_back(name);
+	response.setParameters(params);
+
+	response.setTrailing(msg.getTrailing());
+
+	sendMsg(msg.getClient()->getSocket().fd, response.toString());
+	std::cout << response.toString();
 }
