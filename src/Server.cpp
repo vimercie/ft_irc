@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 01:46:02 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 01:52:30 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,9 +137,11 @@ void	Server::communicate()
 
 	for (nfds_t i = 1; i < nfds; i++)
 	{
+		// Si le socket est libre
 		if (fds[i].fd == -1)
 			continue;
 
+		// Si le socket a une erreur
 		if (fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
 		{
 			close(fds[i].fd);
@@ -147,15 +149,17 @@ void	Server::communicate()
 			continue;
 		}
 
+		// Si le socket est prêt à être lu
 		if (fds[i].revents & POLLIN)
 		{
 			messages = readMsg(fds[i].fd);
 
+			// Lecture des messages entrants
 			for (std::vector<IRCmsg*>::iterator it = messages.begin(), end = messages.end(); it != end; it++)
 			{
 				if ((*it)->getCommand().empty())
 					continue;
-				(*it)->displayMessage();
+				std::cout << (*it)->toString();
 			}
 		}
 	}
@@ -171,6 +175,7 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 
 	bytes_read = recv(fd, buffer, sizeof(buffer), MSG_DONTWAIT);
 
+	// Si on a reçu des données
 	if (bytes_read > 0)
 	{
 		std::vector<std::string>	msgs = splitString(buffer, "\r\n");
@@ -178,12 +183,14 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 		for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); it++)
 			res.push_back(new IRCmsg(*it));
 	}
+	// Si le client s'est déconnecté
 	else if (bytes_read == 0)
 	{
 		std::cout << "Client déconnecté." << std::endl;
 		close(fd);
 		fds[fd].fd = -1;  // Marquer comme libre
 	}
+	// Si on a une erreur
 	else if (errno != EWOULDBLOCK)		// CONDITION INTERDITE (À supprimer) (utiliser fcntl(fd, F_SETFL, O_NONBLOCK) à la place ?)
 		std::cerr << "Erreur de lecture du socket client." << std::endl;
 
