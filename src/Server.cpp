@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 17:26:55 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 17:30:17 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ void	Server::communicate()
 			{
 				if ((*it)->getCommand().empty())
 					continue;
-				std::cout << (*it)->toString();
+				std::cout << (*it)->getClient()->getNickname() + " : " + (*it)->toString();
 				// Exécution des commandes
 				execCmd(*(*it));
 			}
