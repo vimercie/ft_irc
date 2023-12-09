@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/08 19:13:47 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 01:46:02 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,31 @@ void Server::initialize()
 	nfds = 1;
 	std::cout << "Serveur lancé sur le port " << port << std::endl;
 
+	name = "localhost";
+
 	// Création du channel par défaut
 	channels.push_back(new Channel("General"));
+}
+
+void	Server::serverLoop()
+{
+	int	poll_ret;
+
+	while (true)
+	{
+		poll_ret = poll(fds, nfds, 0);
+
+		if (poll_ret < 0)
+		{
+			std::cerr << "Erreur de poll" << std::endl;
+			break;
+		}
+
+		if (fds[0].revents & POLLIN)
+			acceptConnections();
+
+		communicate();
+	}
 }
 
 void Server::acceptConnections()
@@ -105,7 +128,37 @@ void Server::acceptConnections()
 	fds[sockIndex].fd = connfd;
 	fds[sockIndex].events = POLLIN;
 	nfds++;
-	channels[0]->addClient(connfd);
+	addClient(connfd);
+}
+
+void	Server::communicate()
+{
+	std::vector<IRCmsg*>	messages;
+
+	for (nfds_t i = 1; i < nfds; i++)
+	{
+		if (fds[i].fd == -1)
+			continue;
+
+		if (fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
+		{
+			close(fds[i].fd);
+			fds[i].fd = -1;
+			continue;
+		}
+
+		if (fds[i].revents & POLLIN)
+		{
+			messages = readMsg(fds[i].fd);
+
+			for (std::vector<IRCmsg*>::iterator it = messages.begin(), end = messages.end(); it != end; it++)
+			{
+				if ((*it)->getCommand().empty())
+					continue;
+				(*it)->displayMessage();
+			}
+		}
+	}
 }
 
 std::vector<IRCmsg*>	Server::readMsg(int fd)
@@ -120,8 +173,6 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 
 	if (bytes_read > 0)
 	{
-		std::cout << "Message reçu : " << buffer;
-
 		std::vector<std::string>	msgs = splitString(buffer, "\r\n");
 
 		for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); it++)
@@ -139,42 +190,59 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 	return res;
 }
 
-void	Server::communicate()
+void	Server::sendMsg(int fd, const std::string& msg)
 {
-	for (nfds_t i = 1; i < nfds; i++)
-	{
-		if (fds[i].fd == -1)
-			continue;
+	ssize_t	bytes_sent;
 
-		if (fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
-		{
-			close(fds[i].fd);
-			fds[i].fd = -1;
-			continue;
-		}
+	bytes_sent = send(fd, msg.c_str(), msg.length(), 0);
 
-		if (fds[i].revents & POLLIN)
-			readMsg(fds[i].fd);
-	}
+	if (bytes_sent == -1)
+		std::cerr << "Erreur d'envoi du message" << std::endl;
 }
 
-void	Server::serverLoop()
+void	Server::addClient(int socket)
 {
-	int	poll_ret;
+	Client* newClient = new Client(socket);
 
-	while (true)
+	while (newClient->getNickname().empty()
+		|| newClient->getUsername().empty()
+		|| newClient->getHostname().empty()
+		|| newClient->getRealname().empty())
 	{
-		poll_ret = poll(fds, nfds, 0);
+		std::vector<IRCmsg*>	messages = readMsg(newClient->getSocket());
 
-		if (poll_ret < 0)
+		for (std::vector<IRCmsg*>::iterator it = messages.begin(); it != messages.end(); it++)
 		{
-			std::cerr << "Erreur de poll" << std::endl;
-			break;
+			if ((*it)->getCommand().empty())
+				continue;
+
+			newClient->execCmd(*(*it));
 		}
-
-		if (fds[0].revents & POLLIN)
-			acceptConnections();
-
-		communicate();
 	}
+
+	clients.push_back(newClient);
+	channels[0]->addClient(newClient);
+
+	std::cout << "Client " << newClient->getNickname() << " connecté" << std::endl;
+
+	welcome(newClient);
+}
+
+void	Server::welcome(Client* client)
+{
+	IRCmsg						msg;
+	std::vector<std::string>	params;
+
+	msg.setPrefix(name);
+
+	msg.setCommand("001");
+
+	params.push_back(client->getNickname());
+	msg.setParameters(params);
+
+	msg.setTrailing("Welcome to the Internet Relay Network " + client->getNickname() + "!" + client->getUsername() + "@" + client->getHostname());
+
+	// std::cout << msg.toString() << std::endl;
+
+	sendMsg(client->getSocket(), msg.toString());
 }

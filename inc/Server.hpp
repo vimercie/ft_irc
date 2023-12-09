@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/08 19:11:22 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 01:38:47 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ class Server
 		nfds_t 					nfds;
 	// channels
 		std::vector<Channel*>	channels;
+		std::vector<Client*>	clients;
 
 	// methods
 		void	initialize();
@@ -61,11 +62,15 @@ class Server
 		std::string	getName() const;
 
 	// methods
-		void					communicate();
-		std::vector<IRCmsg*>	readMsg(int	fd);
-	
 		void					serverLoop();
 		Client					initClient(int i, struct pollfd* fds);
+		void					addClient(int socket);
+
+		void					communicate();
+		std::vector<IRCmsg*>	readMsg(int	fd);
+		void					sendMsg(int fd, const std::string& msg);
+
+		void					welcome(Client* client);
 };
 
 #endif

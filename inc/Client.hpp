@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:13:05 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/08 18:33:53 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 01:10:54 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,20 @@
 # include <map>
 
 class Command;
+class IRCmsg;
 
 class	Client
 {
+	typedef void (Client::*cmd)(const IRCmsg& msg);
+
 	private:
 		int			socket;
 
 		std::string	nickname;
 		std::string	username;
-		std::string	password;
+		std::string	hostname;
 		std::string realname;
+		std::string	password;
 		std::string	mode;
 
 	public:
@@ -42,16 +46,24 @@ class	Client
 		int		getSocket() const;
 		std::string	getNickname() const;
 		std::string	getUsername() const;
-		std::string	getPassword() const;
+		std::string	getHostname() const;
 		std::string	getRealname() const;
+		std::string	getPassword() const;
 		std::string	getMode() const;
 
 		// setters
 		void	setNickname(const std::string& nickname);
 		void	setUsername(const std::string& username);
-		void	setPassword(const std::string& password);
+		void	setHostname(const std::string& hostname);
 		void	setRealname(const std::string& realname);
+		void	setPassword(const std::string& password);
 
+		// commands
+		void	execCmd(const IRCmsg& msg);
+		void	nick(const IRCmsg& msg);
+		void	user(const IRCmsg& msg);
+
+		std::map<std::string, cmd>	cmds;
 };
 
 #endif

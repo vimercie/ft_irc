@@ -105,7 +105,7 @@ std::string::const_iterator	IRCmsg::parseParameters(std::string::const_iterator&
 	return it;
 }
 
-void	IRCmsg::displayMessage()
+void	IRCmsg::displayMessage() const
 {
 	std::cout << "prefix = " << "|" << prefix << "|" << std::endl;
 	std::cout << "command = " << "|" << command << "|" << std::endl;
