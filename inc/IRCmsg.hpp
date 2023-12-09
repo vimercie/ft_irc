@@ -36,6 +36,7 @@ class IRCmsg
 		~IRCmsg();
 
 	// getters
+		Client*						getClient() const;
 		std::string					getPrefix() const;
 		std::string					getCommand() const;
 		std::vector<std::string>	getParameters() const;

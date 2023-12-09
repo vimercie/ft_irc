@@ -24,6 +24,7 @@ IRCmsg::~IRCmsg() {}
 
 
 // getters
+Client* IRCmsg::getClient() const {return client;}
 std::string IRCmsg::getPrefix() const {return prefix;}
 std::string IRCmsg::getCommand() const {return command;}
 std::vector<std::string> IRCmsg::getParameters() const {return parameters;}
