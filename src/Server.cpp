@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 01:54:35 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 01:58:34 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,6 +211,7 @@ void	Server::addClient(int socket)
 {
 	Client* newClient = new Client(socket);
 
+	// Tant que le client n'a pas envoyé les infos de base
 	while (newClient->getNickname().empty()
 		|| newClient->getUsername().empty()
 		|| newClient->getHostname().empty()
@@ -218,11 +219,13 @@ void	Server::addClient(int socket)
 	{
 		std::vector<IRCmsg*>	messages = readMsg(newClient->getSocket());
 
+		// On parcourt les messages reçus (un ou plusieurs messages peuvent être reçus en même temps dans le buffer)
 		for (std::vector<IRCmsg*>::iterator it = messages.begin(); it != messages.end(); it++)
 		{
 			if ((*it)->getCommand().empty())
 				continue;
 
+			// Exécution des commandes
 			newClient->execCmd(*(*it));
 		}
 	}
@@ -248,8 +251,6 @@ void	Server::welcome(Client* client)
 	msg.setParameters(params);
 
 	msg.setTrailing("Wesh wesh wesh " + client->getNickname());
-
-	// std::cout << msg.toString() << std::endl;
 
 	sendMsg(client->getSocket(), msg.toString());
 }
