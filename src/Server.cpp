@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 17:05:47 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 17:27:30 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ void	Server::communicate()
 			{
 				if ((*it)->getCommand().empty())
 					continue;
-				std::cout << (*it)->toString();
+				std::cout << (*it)->getClient()->getNickname() + " : " + (*it)->toString();
 			}
 		}
 	}
