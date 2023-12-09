@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:13:05 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 01:10:54 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 16:57:58 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <vector>
 # include <algorithm>
 # include <map>
+# include <poll.h>
 
 class Command;
 class IRCmsg;
@@ -27,7 +28,7 @@ class	Client
 	typedef void (Client::*cmd)(const IRCmsg& msg);
 
 	private:
-		int			socket;
+		pollfd		*socket;
 
 		std::string	nickname;
 		std::string	username;
@@ -37,13 +38,13 @@ class	Client
 		std::string	mode;
 
 	public:
-		Client(int socket);
+		Client(pollfd *socket);
 		~Client();
 
 		bool	operator==(const Client& other) const;
 
 		// getters
-		int		getSocket() const;
+		pollfd		getSocket() const;
 		std::string	getNickname() const;
 		std::string	getUsername() const;
 		std::string	getHostname() const;

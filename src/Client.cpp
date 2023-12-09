@@ -6,14 +6,14 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 01:18:13 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 16:58:11 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Client.hpp"
 #include "../inc/IRCmsg.hpp"
 
-Client::Client(int	socket) : socket(socket)
+Client::Client(pollfd	*socket) : socket(socket)
 {
 	cmds["NICK"] = &Client::nick;
 	cmds["USER"] = &Client::user;
@@ -24,7 +24,7 @@ Client::~Client() {}
 bool	Client::operator==(const Client& other) const {return nickname == other.nickname;}
 
 // getters
-int		Client::getSocket() const {return socket;}
+pollfd		Client::getSocket() const {return *socket;}
 std::string	Client::getNickname() const {return nickname;}
 std::string	Client::getUsername() const {return username;}
 std::string	Client::getHostname() const {return hostname;}

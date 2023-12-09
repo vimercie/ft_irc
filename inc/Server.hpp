@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 15:28:03 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 17:05:26 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,9 @@ class Server
 	// methods
 		void					serverLoop();
 		Client					initClient(int i, struct pollfd* fds);
-		void					addClient(int socket);
+		void					addClient(pollfd *socket);
+		// void					removeClient(Client* client);
+		Client*					getClientByFd(int fd);
 
 		void					communicate();
 		std::vector<IRCmsg*>	readMsg(int	fd);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 15:43:47 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 17:05:47 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ void Server::acceptConnections()
 	fds[sockIndex].fd = connfd;
 	fds[sockIndex].events = POLLIN;
 	nfds++;
-	addClient(connfd);
+	addClient(&fds[sockIndex]);
 }
 
 void	Server::communicate()
@@ -188,7 +188,7 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 		std::vector<std::string>	msgs = splitString(buffer, "\r\n");
 
 		for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); it++)
-			res.push_back(new IRCmsg(*it));
+			res.push_back(new IRCmsg(getClientByFd(fd), *it));
 	}
 	// Si le client s'est déconnecté
 	else if (bytes_read == 0)
@@ -214,7 +214,7 @@ void	Server::sendMsg(int fd, const std::string& msg)
 		std::cerr << "Erreur d'envoi du message" << std::endl;
 }
 
-void	Server::addClient(int socket)
+void	Server::addClient(pollfd *socket)
 {
 	Client* newClient = new Client(socket);
 
@@ -224,7 +224,7 @@ void	Server::addClient(int socket)
 		|| newClient->getHostname().empty()
 		|| newClient->getRealname().empty())
 	{
-		std::vector<IRCmsg*>	messages = readMsg(newClient->getSocket());
+		std::vector<IRCmsg*>	messages = readMsg(newClient->getSocket().fd);
 
 		// On parcourt les messages reçus (un ou plusieurs messages peuvent être reçus en même temps dans le buffer)
 		for (std::vector<IRCmsg*>::iterator it = messages.begin(); it != messages.end(); it++)
@@ -245,6 +245,14 @@ void	Server::addClient(int socket)
 	welcome(newClient);
 }
 
+Client*	Server::getClientByFd(int fd)
+{
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+		if ((*it)->getSocket().fd == fd)
+			return *it;
+	return NULL;
+}
+
 void	Server::welcome(Client* client)
 {
 	IRCmsg						msg;
@@ -259,5 +267,5 @@ void	Server::welcome(Client* client)
 
 	msg.setTrailing("Wesh wesh wesh " + client->getNickname());
 
-	sendMsg(client->getSocket(), msg.toString());
+	sendMsg(client->getSocket().fd, msg.toString());
 }

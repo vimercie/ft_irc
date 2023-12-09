@@ -19,16 +19,20 @@
 # include <vector>
 # include <algorithm>
 
+class Client;
+
 class IRCmsg
 {
 	private:
+		Client*						client;
+
 		std::string					prefix;
 		std::string					command;
 		std::vector<std::string>	parameters;
 		std::string					trailing;
 	public:
 		IRCmsg();
-		IRCmsg(const std::string& message);
+		IRCmsg(Client* client, const std::string& message);
 		~IRCmsg();
 
 	// getters

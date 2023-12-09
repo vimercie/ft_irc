@@ -15,7 +15,7 @@
 
 IRCmsg::IRCmsg() {}
 
-IRCmsg::IRCmsg(const std::string& message)
+IRCmsg::IRCmsg(Client* client, const std::string& message) : client(client)
 {
 	fromString(message);
 }
