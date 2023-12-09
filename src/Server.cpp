@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 01:58:34 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 15:43:47 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 #include "../inc/Channel.hpp"
 #include "../inc/Client.hpp"
 #include "../inc/Utils.hpp"
+
+int	status = 1;
+void statusHandler(int sig);
 
 Server::Server(int port, const std::string& password) : port(port), password(password)
 {
@@ -37,6 +40,10 @@ Server::~Server()
 
 void Server::initialize()
 {
+	// Ignorer sigpipe
+	signal(SIGPIPE, SIG_IGN);
+	// Gérer SIGINT
+	signal(SIGINT, statusHandler);
 	// Création du socket
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1)
@@ -84,11 +91,11 @@ void	Server::serverLoop()
 {
 	int	poll_ret;
 
-	while (true)
+	while (status)
 	{
 		poll_ret = poll(fds, nfds, 0);
 
-		if (poll_ret < 0)
+		if (poll_ret < 0 && status == 1)
 		{
 			std::cerr << "Erreur de poll" << std::endl;
 			break;

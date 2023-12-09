@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/08 18:25:34 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/08 18:42:57 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 15:42:04 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include <string>
 # include <vector>
+# include <csignal>
+# include <iostream>
 
 std::vector<std::string>	splitString(const std::string& input, const std::string& separator);
 std::string::const_iterator	getNextWord(std::string::const_iterator& it, const std::string& message, std::string& buffer);

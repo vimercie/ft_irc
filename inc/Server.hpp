@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 01:38:47 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 15:28:03 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include <fcntl.h>
 # include <errno.h>
 # include <vector>
+# include <signal.h>
 
 class Channel;
 class Client;
@@ -53,6 +54,7 @@ class Server
 	// methods
 		void	initialize();
 		void	acceptConnections();
+		void	closeServer();
 
 	public:
 		Server(int port, const std::string& password);

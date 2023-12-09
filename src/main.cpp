@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 15:27:23 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/08 17:39:25 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 15:40:50 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
-
 
 int main(int argc, char* argv[])
 {

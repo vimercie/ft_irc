@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/08 18:24:34 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/08 18:43:20 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 15:42:25 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,15 @@ std::string::const_iterator	getNextWord(std::string::const_iterator& it, const s
     buffer = std::string(start, it);
 
 	return it;
+}
+
+extern int    status;
+
+void statusHandler(int sig)
+{
+    if (sig == SIGINT)
+    {
+        std::cout << "SIGINT received" << std::endl;
+        status = 0;
+    }
 }
