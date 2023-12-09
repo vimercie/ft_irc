@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 19:27:06 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 19:30:35 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,8 +134,9 @@ void Server::acceptConnections()
 
 	fds[sockIndex].fd = connfd;
 	fds[sockIndex].events = POLLIN;
-	nfds++;
+	fds[sockIndex].revents = 0;
 	addClient(&fds[sockIndex]);
+	nfds++;
 }
 
 void	Server::communicate()
