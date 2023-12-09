@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 01:52:30 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/09 01:54:35 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,7 +247,7 @@ void	Server::welcome(Client* client)
 	params.push_back(client->getNickname());
 	msg.setParameters(params);
 
-	msg.setTrailing("Welcome to the Internet Relay Network " + client->getNickname() + "!" + client->getUsername() + "@" + client->getHostname());
+	msg.setTrailing("Wesh wesh wesh " + client->getNickname());
 
 	// std::cout << msg.toString() << std::endl;
 
