@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/10 02:54:46 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 03:22:22 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,30 +21,26 @@ Command::Command(const IRCmsg& msg, Client* client)
 	userCmds["NICK"] = &Command::nick;
 	userCmds["USER"] = &Command::user;
 
-	exec(msg, client);
-}
-
-Command::~Command() {}
-
-void	Command::exec(const IRCmsg& msg, Client* client)
-{
 	std::map<std::string, userCmd>::iterator	it = userCmds.find(msg.getCommand());
 
 	if (it != userCmds.end())
 		(this->*(it->second))(msg, client);
 }
 
-// int Command::exec(const IRCmsg& msg, Channel* channel)
+// Command::Command(const IRCmsg& msg, Channel* channel)
 // {
-	
+// 	channelCmds["JOIN"] = &Command::join;
+
+// 	std::map<std::string, channelCmd>::iterator	it = channelCmds.find(msg.getCommand());
+
+// 	if (it != channelCmds.end())
+// 		(this->*(it->second))(msg, channel);
 // }
 
-// int Command::exec(const IRCmsg& msg, Server* server)
-// {
-	
-// }
+Command::~Command() {}
 
 
+// user related commands
 void	Command::nick(const IRCmsg& msg, Client* client)
 {
 	client->setNickname(msg.getParameters()[0]);
@@ -69,3 +65,7 @@ void	Command::welcome(Client* client)
 
 	sendMsg(client->getSocket().fd, msg.toString());
 }
+
+
+// channel related commands
+// void	Command::join(const IRCmsg& msg, Channel* channel) {}
