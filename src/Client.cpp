@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 16:58:11 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 02:43:03 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 Client::Client(pollfd	*socket) : socket(socket)
 {
-	cmds["NICK"] = &Client::nick;
-	cmds["USER"] = &Client::user;
+	// cmds["NICK"] = &Client::nick;
+	// cmds["USER"] = &Client::user;
 }
 
 Client::~Client() {}
@@ -41,22 +41,22 @@ void	Client::setPassword(const std::string& password) {this->password = password
 
 
 // commands
-void	Client::execCmd(const IRCmsg& msg)
-{
-	std::map<std::string, cmd>::iterator	it = cmds.find(msg.getCommand());
+// void	Client::execCmd(const IRCmsg& msg)
+// {
+// 	std::map<std::string, cmd>::iterator	it = cmds.find(msg.getCommand());
 
-	if (it != cmds.end())
-		(this->*(it->second))(msg);
-}
+// 	if (it != cmds.end())
+// 		(this->*(it->second))(msg);
+// }
 
-void	Client::nick(const IRCmsg& msg)
-{
-	setNickname(msg.getParameters()[0]);
-}
+// void	Client::nick(const IRCmsg& msg)
+// {
+// 	setNickname(msg.getParameters()[0]);
+// }
 
-void	Client::user(const IRCmsg& msg)
-{
-	setUsername(msg.getParameters()[0]);
-	setHostname(msg.getParameters()[1]);
-	setRealname(msg.getTrailing());
-}
+// void	Client::user(const IRCmsg& msg)
+// {
+// 	setUsername(msg.getParameters()[0]);
+// 	setHostname(msg.getParameters()[1]);
+// 	setRealname(msg.getTrailing());
+// }

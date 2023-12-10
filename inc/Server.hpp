@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 19:04:27 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 02:58:15 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,7 @@ class Server
 
 		void					communicate();
 		std::vector<IRCmsg*>	readMsg(int	fd);
-		void					sendMsg(int fd, const std::string& msg);
 
-		void					welcome(Client* client);
 	// channels broadcast
 		void					broadcast(const IRCmsg& msg);
 		void					broadcast(const IRCmsg& msg, const std::vector<Client*>& clients);

@@ -4,9 +4,10 @@ VPATH=		src/
 
 SRC=		main.cpp		\
 			Server.cpp		\
-			Channel.cpp		\
 			Client.cpp		\
+			Channel.cpp		\
 			IRCmsg.cpp		\
+			Command.cpp		\
 			Utils.cpp
 
 INCDIR=		inc/

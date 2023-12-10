@@ -73,7 +73,7 @@ std::string IRCmsg::toString() const
 	}
 
 	if (!trailing.empty())
-		message += " :" + trailing;
+		message += " " + trailing;
 
 	message += "\r\n";
 

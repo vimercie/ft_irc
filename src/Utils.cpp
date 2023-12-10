@@ -3,14 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/08 18:24:34 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 15:42:25 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 02:49:24 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Utils.hpp"
+
+extern int    status;
+
+void statusHandler(int sig)
+{
+    if (sig == SIGINT)
+    {
+        std::cout << "SIGINT received" << std::endl;
+        status = 0;
+    }
+}
 
 std::vector<std::string> splitString(const std::string& input, const std::string& separator)
 {
@@ -47,13 +58,12 @@ std::string::const_iterator	getNextWord(std::string::const_iterator& it, const s
 	return it;
 }
 
-extern int    status;
-
-void statusHandler(int sig)
+void	sendMsg(int fd, const std::string& msg)
 {
-    if (sig == SIGINT)
-    {
-        std::cout << "SIGINT received" << std::endl;
-        status = 0;
-    }
+	ssize_t	bytes_sent;
+
+	bytes_sent = send(fd, msg.c_str(), msg.length(), 0);
+
+	if (bytes_sent == -1)
+		std::cerr << "Erreur d'envoi du message" << std::endl;
 }

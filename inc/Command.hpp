@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:39:17 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/08 18:56:25 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 02:55:00 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,22 +28,32 @@ class Channel;
 
 class Command
 {
-	typedef int (Command::*userCmd)(const IRCmsg&, Client*, Channel*);
+	typedef void (Command::*userCmd)(const IRCmsg&, Client*);
+	// typedef void (Command::*channelCmd)(const IRCmsg&, Channel*);
+	// typedef void (Command::*serverCmd)(const IRCmsg&, Server*);
 
 	private:
 		std::map<std::string, userCmd>	userCmds;
 	public:
-		Command(int type);
+		Command(const IRCmsg& msg, Client* client);
+		// Command(const IRCmsg& msg, Channel* channel);
+		// Command(const IRCmsg& msg, Server* server);
 		~Command();
 
+	// methods
+		void	exec(const IRCmsg& msg, Client* client);
+		// int	exec(const IRCmsg& msg, Channel* channel);
+		// int	exec(const IRCmsg& msg, Server* server);
+
 	// users
-		int	nick(const IRCmsg& msg, Client* client, Channel* channel);
-		int	user(const IRCmsg& msg, Client* client, Channel* channel);
+		void	nick(const IRCmsg& msg, Client* client);
+		void	user(const IRCmsg& msg, Client* client);
 
 	// channels
 
 	// server
-	
+
+		void	welcome(Client* client);	
 };
 
 #endif

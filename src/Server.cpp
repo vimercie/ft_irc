@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 19:30:35 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 03:04:49 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
-#include "../inc/IRCmsg.hpp"
-#include "../inc/Channel.hpp"
 #include "../inc/Client.hpp"
+#include "../inc/Channel.hpp"
+#include "../inc/IRCmsg.hpp"
+#include "../inc/Command.hpp"
 #include "../inc/Utils.hpp"
 
 int	status = 1;
@@ -82,9 +83,6 @@ void Server::initialize()
 	std::cout << "Serveur lancé sur le port " << port << std::endl;
 
 	name = "localhost";
-
-	// Création du channel par défaut
-	channels.push_back(new Channel("General"));
 }
 
 void	Server::serverLoop()
@@ -135,7 +133,9 @@ void Server::acceptConnections()
 	fds[sockIndex].fd = connfd;
 	fds[sockIndex].events = POLLIN;
 	fds[sockIndex].revents = 0;
-	addClient(&fds[sockIndex]);
+
+	clients.push_back(new Client(&fds[sockIndex]));
+
 	nfds++;
 }
 
@@ -167,14 +167,16 @@ void	Server::communicate()
 			{
 				if ((*it)->getCommand().empty())
 					continue;
-				std::cout << (*it)->getClient()->getNickname() + " : " + (*it)->toString();
+
+				// Affichage du message reçu
+				std::cout << "<" + (*it)->getClient()->getNickname() + ">" + " : " + (*it)->toString();
+
 				// Exécution des commandes
-				execCmd(*(*it));
+				Command(*(*it), (*it)->getClient());
 			}
 		}
 	}
 }
-
 
 std::vector<IRCmsg*>	Server::readMsg(int fd)
 {
@@ -208,70 +210,15 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 	return res;
 }
 
-void	Server::sendMsg(int fd, const std::string& msg)
-{
-	ssize_t	bytes_sent;
-
-	bytes_sent = send(fd, msg.c_str(), msg.length(), 0);
-
-	if (bytes_sent == -1)
-		std::cerr << "Erreur d'envoi du message" << std::endl;
-}
-
-void	Server::addClient(pollfd *socket)
-{
-	Client* newClient = new Client(socket);
-
-	// Tant que le client n'a pas envoyé les infos de base
-	while (newClient->getNickname().empty()
-		|| newClient->getUsername().empty()
-		|| newClient->getHostname().empty()
-		|| newClient->getRealname().empty())
-	{
-		std::vector<IRCmsg*>	messages = readMsg(newClient->getSocket().fd);
-
-		// On parcourt les messages reçus (un ou plusieurs messages peuvent être reçus en même temps dans le buffer)
-		for (std::vector<IRCmsg*>::iterator it = messages.begin(); it != messages.end(); it++)
-		{
-			if ((*it)->getCommand().empty())
-				continue;
-
-			// Exécution des commandes
-			newClient->execCmd(*(*it));
-		}
-	}
-
-	clients.push_back(newClient);
-	channels[0]->addClient(newClient);
-
-	std::cout << "Client " << newClient->getNickname() << " connecté" << std::endl;
-
-	welcome(newClient);
-}
-
 Client*	Server::getClientByFd(int fd)
 {
 	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
 		if ((*it)->getSocket().fd == fd)
 			return *it;
+	}
+
 	return NULL;
-}
-
-void	Server::welcome(Client* client)
-{
-	IRCmsg						msg;
-	std::vector<std::string>	params;
-
-	msg.setPrefix(name);
-
-	msg.setCommand("001");
-
-	params.push_back(client->getNickname());
-	msg.setParameters(params);
-
-	msg.setTrailing("Wesh wesh wesh " + client->getNickname());
-
-	sendMsg(client->getSocket().fd, msg.toString());
 }
 
 Channel*	Server::getChannelByName(const std::string& name)
