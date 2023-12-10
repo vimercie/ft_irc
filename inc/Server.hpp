@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/10 02:58:15 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 16:00:52 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,15 @@ class Server
 		std::vector<Client*>	clients;
 
 	// methods
-		void	initialize();
-		void	acceptConnections();
-		void	closeServer();
+	
+	// server init
+		void		createSocket();
+		void		configureServerAddress();
+		void		bindSocket();
+		void		startListening();
+		void		initializePoll();
+
+		void		acceptConnections();
 
 	public:
 		Server(int port, const std::string& password);
@@ -65,11 +71,6 @@ class Server
 
 	// methods
 		void					serverLoop();
-		Client					initClient(int i, struct pollfd* fds);
-		void					addClient(pollfd *socket);
-		// void					removeClient(Client* client);
-		Client*					getClientByFd(int fd);
-		Channel*				getChannelByName(const std::string& name);
 
 		void					communicate();
 		std::vector<IRCmsg*>	readMsg(int	fd);
@@ -79,10 +80,15 @@ class Server
 		void					broadcast(const IRCmsg& msg, const std::vector<Client*>& clients);
 		void					broadcast(const IRCmsg& msg, const std::vector<Channel*>& channels);
 		void					broadcast(const IRCmsg& msg, const std::vector<Client*>& clients, const std::vector<Channel*>& channels);
+
 	// cmds
 		void					execCmd(const IRCmsg& msg);
 		void					join(const IRCmsg& msg);
 		void					privmsg(const IRCmsg& msg);
+
+	// utils
+		Client*					getClientByFd(int fd);
+		Channel*				getChannelByName(const std::string& name);
 };
 
 #endif

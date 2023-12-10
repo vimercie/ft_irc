@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/10 03:04:49 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 16:01:31 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,19 @@ void statusHandler(int sig);
 Server::Server(int port, const std::string& password) : port(port), password(password)
 {
 	std::cout << "Server created" << std::endl;
-	initialize();
+
+	signal(SIGPIPE, SIG_IGN);
+	signal(SIGINT, statusHandler);
+
+	createSocket();
+	configureServerAddress();
+	bindSocket();
+	startListening();
+	initializePoll();
+
+	name = "localhost";
+
+	std::cout << "Serveur lancé sur le port " << port << std::endl;
 }
 
 Server::~Server()
@@ -39,50 +51,54 @@ Server::~Server()
 	std::cout << "Server destroyed" << std::endl;
 }
 
-void Server::initialize()
+void	Server::createSocket()
 {
-	// Ignorer sigpipe
-	signal(SIGPIPE, SIG_IGN);
-	// Gérer SIGINT
-	signal(SIGINT, statusHandler);
-	// Création du socket
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
 	if (sockfd == -1)
 	{
 		std::cerr << "Erreur de création du socket" << std::endl;
 		exit(1);
 	}
+}
 
-	// Configuration de l'adresse du serveur
+void	Server::configureServerAddress()
+{
 	memset(&servaddr, 0, sizeof(servaddr));
+
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port = htons(this->port);
+	servaddr.sin_port = htons(port);
+}
 
-	// Liaison du socket à l'adresse du serveur
+void	Server::bindSocket()
+{
 	if (bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0)
 	{
 		std::cerr << "Erreur de liaison du socket" << std::endl;
 		exit(1);
 	}
+}
 
-	// Mise en écoute du serveur
+void	Server::startListening()
+{
 	if (listen(sockfd, 5) != 0)
 	{
 		std::cerr << "Erreur lors de la mise en écoute" << std::endl;
 		exit(1);
 	}
+}
 
-	// Initialisation du poll
+void	Server::initializePoll()
+{
 	for (int i = 0; i < MAX_CLIENTS; i++)
 		fds[i].fd = -1;
 
 	fds[0].fd = sockfd;
 	fds[0].events = POLLIN;
-	nfds = 1;
-	std::cout << "Serveur lancé sur le port " << port << std::endl;
+	fds[0].revents = 0;
 
-	name = "localhost";
+	nfds = 1;
 }
 
 void	Server::serverLoop()
@@ -119,8 +135,6 @@ void Server::acceptConnections()
 		return;
 	}
 
-	std::cout << "Nouvelle connexion acceptée" << std::endl;
-
 	while (fds[sockIndex].fd != -1 && sockIndex < MAX_CLIENTS)
 		sockIndex++;
 
@@ -137,7 +151,10 @@ void Server::acceptConnections()
 	clients.push_back(new Client(&fds[sockIndex]));
 
 	nfds++;
+
+	std::cout << "Nouvelle connexion acceptée" << std::endl;
 }
+
 
 void	Server::communicate()
 {
@@ -210,6 +227,8 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 	return res;
 }
 
+
+// utils
 Client*	Server::getClientByFd(int fd)
 {
 	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
@@ -228,6 +247,7 @@ Channel*	Server::getChannelByName(const std::string& name)
 			return *it;
 	return NULL;
 }
+
 
 void	Server::execCmd(const IRCmsg&  msg)
 {
