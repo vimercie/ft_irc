@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:39:17 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/10 17:03:27 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 17:27:09 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,14 @@ class Command
 	// user commands
 		static void	nick(const IRCmsg& msg);
 		static void	user(const IRCmsg& msg);
-	
+	// channel commands
+		// static void	join(const IRCmsg& msg, std::vector<Channel*> channels);
+
 	// utils
 		static void welcome(Client* client);
 
 	public:
-		static void exec(const IRCmsg& msg);
+		static void exec(Server* server, const IRCmsg& msg);
 };
 
 #endif

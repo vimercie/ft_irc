@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/10 17:02:21 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 17:19:12 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,10 @@ Server::~Server()
 
 	std::cout << "Server destroyed" << std::endl;
 }
+
+// getters
+std::vector<Channel*>	Server::getChannels() const {return channels;}
+
 
 void	Server::createSocket()
 {
@@ -188,7 +192,7 @@ void	Server::communicate()
 				std::cout << "<" + (*it)->getClient()->getNickname() + ">" + " : " + (*it)->toString();
 
 				// Exécution des commandes
-				Command::exec(**it);
+				Command::exec(this, **it);
 			}
 		}
 	}

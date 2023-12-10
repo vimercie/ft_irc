@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/10 16:00:52 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 17:19:52 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ class Server
 		~Server();
 
 	// getters
-		std::string	getName() const;
+		std::vector<Channel*>	getChannels() const;
 
 	// methods
 		void					serverLoop();
