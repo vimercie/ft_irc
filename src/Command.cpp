@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/10 03:22:22 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 17:03:48 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,42 +16,33 @@
 #include "../inc/Channel.hpp"
 #include "../inc/Utils.hpp"
 
-Command::Command(const IRCmsg& msg, Client* client)
+void Command::exec(const IRCmsg& msg)
 {
-	userCmds["NICK"] = &Command::nick;
-	userCmds["USER"] = &Command::user;
+    typedef void (*cmd)(const IRCmsg&);
 
-	std::map<std::string, userCmd>::iterator	it = userCmds.find(msg.getCommand());
+    static std::map<std::string, cmd> cmds;
 
-	if (it != userCmds.end())
-		(this->*(it->second))(msg, client);
+    cmds["NICK"] = &Command::nick;
+    cmds["USER"] = &Command::user;
+
+    std::map<std::string, cmd>::iterator cmdIt = cmds.find(msg.getCommand());
+
+    if (cmdIt != cmds.end())
+        cmdIt->second(msg);
 }
-
-// Command::Command(const IRCmsg& msg, Channel* channel)
-// {
-// 	channelCmds["JOIN"] = &Command::join;
-
-// 	std::map<std::string, channelCmd>::iterator	it = channelCmds.find(msg.getCommand());
-
-// 	if (it != channelCmds.end())
-// 		(this->*(it->second))(msg, channel);
-// }
-
-Command::~Command() {}
-
 
 // user related commands
-void	Command::nick(const IRCmsg& msg, Client* client)
+void	Command::nick(const IRCmsg& msg)
 {
-	client->setNickname(msg.getParameters()[0]);
-	welcome(client);
+	msg.getClient()->setNickname(msg.getParameters()[0]);
+	welcome(msg.getClient());
 }
 
-void	Command::user(const IRCmsg& msg, Client* client)
+void	Command::user(const IRCmsg& msg)
 {
-	client->setUsername(msg.getParameters()[0]);
-	client->setHostname(msg.getParameters()[1]);
-	client->setRealname(msg.getTrailing());
+	msg.getClient()->setUsername(msg.getParameters()[0]);
+	msg.getClient()->setHostname(msg.getParameters()[1]);
+	msg.getClient()->setRealname(msg.getTrailing());
 }
 
 void	Command::welcome(Client* client)
@@ -68,4 +59,7 @@ void	Command::welcome(Client* client)
 
 
 // channel related commands
-// void	Command::join(const IRCmsg& msg, Channel* channel) {}
+
+
+// server related commands
+

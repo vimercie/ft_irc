@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/10 16:01:31 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 17:02:21 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,7 +155,6 @@ void Server::acceptConnections()
 	std::cout << "Nouvelle connexion acceptée" << std::endl;
 }
 
-
 void	Server::communicate()
 {
 	std::vector<IRCmsg*>	messages;
@@ -189,7 +188,7 @@ void	Server::communicate()
 				std::cout << "<" + (*it)->getClient()->getNickname() + ">" + " : " + (*it)->toString();
 
 				// Exécution des commandes
-				Command(*(*it), (*it)->getClient());
+				Command::exec(**it);
 			}
 		}
 	}

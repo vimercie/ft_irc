@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:39:17 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/10 03:22:33 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/10 17:03:27 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,32 +29,16 @@ class Server;
 
 class Command
 {
-	typedef void (Command::*userCmd)(const IRCmsg&, Client*);
-	// typedef void (Command::*channelCmd)(const IRCmsg&, Channel*);
-	// typedef void (Command::*serverCmd)(const IRCmsg&, Server*);
-
 	private:
-		std::map<std::string, userCmd>		userCmds;
-		// std::map<std::string, channelCmd>	channelCmds;
-		// std::map<std::string, serverCmd>	serverCmds;
-	public:
-		Command(const IRCmsg& msg, Client* client);
-		// Command(const IRCmsg& msg, Channel* channel);
-		// Command(const IRCmsg& msg, Server* server);
-		~Command();
-
 	// user commands
-		void	nick(const IRCmsg& msg, Client* client);
-		void	user(const IRCmsg& msg, Client* client);
-
-	// channel commands
-		// void	join(const IRCmsg& msg, Channel* channel);
-
-	// server commands
-
-
+		static void	nick(const IRCmsg& msg);
+		static void	user(const IRCmsg& msg);
+	
 	// utils
-		void	welcome(Client* client);	
+		static void welcome(Client* client);
+
+	public:
+		static void exec(const IRCmsg& msg);
 };
 
 #endif
