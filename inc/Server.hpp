@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/12 16:56:46 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 17:08:16 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,15 +94,9 @@ class Server
 		std::vector<IRCmsg*>	readMsg(int	fd);
 		void					sendMsg(int fd, const std::string& msg);
 
-	// channels broadcast
-		void					broadcast(const IRCmsg& msg);
-		void					broadcast(const IRCmsg& msg, const std::vector<Client*>& clients);
-		void					broadcast(const IRCmsg& msg, const std::vector<Channel*>& channels);
-		void					broadcast(const IRCmsg& msg, const std::vector<Client*>& clients, const std::vector<Channel*>& channels);
-
-
 	// utils
 		Client*					getClientByFd(int fd);
+		Client*					getClientByNickname(const std::string& nickname);
 		Channel*				getChannelByName(const std::string& name);
 };
 

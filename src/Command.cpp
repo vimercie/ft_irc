@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/12 16:58:31 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 18:42:56 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ int Server::exec(const IRCmsg& msg)
 	cmds["PASS"] = &Server::pass;
 	cmds["QUIT"] = &Server::quit;
 
-	cmds["JOIN"] = &Server::join;
+	cmds["JOIN"] 	= &Server::join;
+	cmds["PRIVMSG"]	= &Server::privmsg;
 
     std::map<std::string, cmd>::iterator it = cmds.find(msg.getCommand());
 
@@ -94,12 +95,8 @@ int	Server::join(const IRCmsg& msg)
 
 	channel = getChannelByName(msg.getParameters()[0]);
 
-	std::cout << "Channel : " << msg.getParameters()[0] << std::endl;
-
 	if (channel == NULL)
 	{
-		std::cout << "Channel " << msg.getParameters()[0] << " créé" << std::endl;
-
 		channel = new Channel(msg.getParameters()[0]);
 		channels.push_back(channel);
 	}
@@ -108,27 +105,41 @@ int	Server::join(const IRCmsg& msg)
 	return 0;
 }
 
+void	print_clients(std::vector<Client*> clients)
+{
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+		std::cout << (*it)->getNickname() << std::endl;
+}
+
 int	Server::privmsg(const IRCmsg& msg)
 {
 	IRCmsg						response;
 	Channel*					channel;
 
-	channel = getChannelByName(msg.getParameters()[0].substr(1));
+	channel = getChannelByName(msg.getParameters()[0]);
 	if (channel == NULL)
 	{
 		;
 	}
 	else
 	{
+		print_clients(channel->getClients());
 		response.setPrefix(msg.getClient()->getNickname());
 		response.setCommand("PRIVMSG");
 		response.setParameters(msg.getParameters());
 		response.setTrailing(msg.getTrailing());
 		response.setClient(msg.getClient());
-		broadcast(response, channel->getClients());
+		std::cout << response.toString();
+		std::vector<Client*> clients = channel->getClients();
+		for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+		{
+			if ((*it)->getSocket().fd != msg.getClient()->getSocket().fd)
+		    	sendMsg((*it)->getSocket().fd, response.toString());
+		}
 	}
 	return 0;
 }
+
 
 void	Server::welcome(Client* client)
 {

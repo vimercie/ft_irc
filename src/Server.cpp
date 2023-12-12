@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/12 16:58:55 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 17:08:04 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,40 +284,21 @@ Client*	Server::getClientByFd(int fd)
 	return NULL;
 }
 
+Client*	Server::getClientByNickname(const std::string& nickname)
+{
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if ((*it)->getNickname() == nickname)
+			return *it;
+	}
+
+	return NULL;
+}
+
 Channel*	Server::getChannelByName(const std::string& name)
 {
 	for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); it++)
 		if ((*it)->getName() == name)
 			return *it;
 	return NULL;
-}
-
-void	Server::broadcast(const IRCmsg& msg)
-{
-	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
-		if ((*it)->getSocket().fd != msg.getClient()->getSocket().fd)
-			sendMsg((*it)->getSocket().fd, msg.toString());
-}
-
-void	Server::broadcast(const IRCmsg& msg, const std::vector<Client*>& clients)
-{
-	for (std::vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++)
-		if ((*it)->getSocket().fd != msg.getClient()->getSocket().fd)
-			sendMsg((*it)->getSocket().fd, msg.toString());
-}
-
-void	Server::broadcast(const IRCmsg& msg, const std::vector<Channel*>& channels)
-{
-	for (std::vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++)
-		broadcast(msg, (*it)->getClients());
-}
-
-void	Server::broadcast(const IRCmsg& msg, const std::vector<Client*>& clients, const std::vector<Channel*>& channels)
-{
-	for (std::vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++)
-		if ((*it)->getSocket().fd != msg.getClient()->getSocket().fd)
-			sendMsg((*it)->getSocket().fd, msg.toString());
-
-	for (std::vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++)
-		broadcast(msg, (*it)->getClients());
 }
