@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/10 17:19:52 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 15:09:14 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,10 @@ class Server
 		void					broadcast(const IRCmsg& msg, const std::vector<Client*>& clients, const std::vector<Channel*>& channels);
 
 	// cmds
-		void					execCmd(const IRCmsg& msg);
+		void					exec(const IRCmsg& msg);
+		void					nick(const IRCmsg& msg);
+		void					user(const IRCmsg& msg);
+		void					welcome(Client* client);
 		void					join(const IRCmsg& msg);
 		void					privmsg(const IRCmsg& msg);
 

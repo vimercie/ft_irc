@@ -6,62 +6,50 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/10 17:28:14 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 15:16:15 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/Command.hpp"
 #include "../inc/IRCmsg.hpp"
 #include "../inc/Client.hpp"
 #include "../inc/Channel.hpp"
 #include "../inc/Server.hpp"
 #include "../inc/Utils.hpp"
 
-void Command::exec(Server* server, const IRCmsg& msg)
+void Server::exec(const IRCmsg& msg)
 {
-    typedef void (*userCmd)(const IRCmsg&);
-	typedef void (*chanCmd)(const IRCmsg&, std::vector<Channel*>);
-	// typedef void (*servCmd)(const IRCmsg&);
+    typedef void (Server::*cmd)(const IRCmsg& msg);
 
-    static std::map<std::string, userCmd> userCmds;
-	static std::map<std::string, chanCmd> chanCmds;
-	// static std::map<std::string, servCmd> servCmds;
+    std::map<std::string, cmd> cmds;
 
-    userCmds["NICK"] = &Command::nick;
-    userCmds["USER"] = &Command::user;
+    cmds["NICK"] = &Server::nick;
+    cmds["USER"] = &Server::user;
 
-	// chanCmds["JOIN"] = &Command::join;
+	cmds["JOIN"] = &Server::join;
 
-    std::map<std::string, userCmd>::iterator userCmdIt = userCmds.find(msg.getCommand());
+    std::map<std::string, cmd>::iterator it = cmds.find(msg.getCommand());
 
-    if (userCmdIt != userCmds.end())
-	{
-        userCmdIt->second(msg);
-	}
-
-	std::map<std::string, chanCmd>::iterator chanCmdIt = chanCmds.find(msg.getCommand());
-
-	if (chanCmdIt != chanCmds.end())
-	{
-		chanCmdIt->second(msg, server->getChannels());
-	}
+    if (it != cmds.end())
+		(this->*(it->second))(msg);
+	else
+		std::cout << "Command not found" << std::endl;
 }
 
 // user related commands
-void	Command::nick(const IRCmsg& msg)
+void	Server::nick(const IRCmsg& msg)
 {
 	msg.getClient()->setNickname(msg.getParameters()[0]);
 	welcome(msg.getClient());
 }
 
-void	Command::user(const IRCmsg& msg)
+void	Server::user(const IRCmsg& msg)
 {
 	msg.getClient()->setUsername(msg.getParameters()[0]);
 	msg.getClient()->setHostname(msg.getParameters()[1]);
 	msg.getClient()->setRealname(msg.getTrailing());
 }
 
-void	Command::welcome(Client* client)
+void	Server::welcome(Client* client)
 {
 	IRCmsg	msg;
 
@@ -75,10 +63,10 @@ void	Command::welcome(Client* client)
 
 
 // channel related commands
-// void	Command::join(const IRCmsg& msg)
+
+// server related commands
+// void	Command::join(const IRCmsg& msg, Server *server)
 // {
 	
 // }
-
-// server related commands
 

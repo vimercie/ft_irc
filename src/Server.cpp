@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/10 17:19:12 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 15:15:30 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include "../inc/Client.hpp"
 #include "../inc/Channel.hpp"
 #include "../inc/IRCmsg.hpp"
-#include "../inc/Command.hpp"
 #include "../inc/Utils.hpp"
 
 int	status = 1;
@@ -192,7 +191,7 @@ void	Server::communicate()
 				std::cout << "<" + (*it)->getClient()->getNickname() + ">" + " : " + (*it)->toString();
 
 				// Exécution des commandes
-				Command::exec(this, **it);
+				exec(*(*it));
 			}
 		}
 	}
@@ -251,34 +250,22 @@ Channel*	Server::getChannelByName(const std::string& name)
 	return NULL;
 }
 
-
-void	Server::execCmd(const IRCmsg&  msg)
-{
-	std::string	cmd = msg.getCommand();
-
-	if (cmd == "JOIN")
-		join(msg);
-	if (cmd == "PRIVMSG")
-		privmsg(msg);
-	else
-		std::cout << "Commande inconnue : " << cmd << std::endl;
-}
-
 void Server::join(const IRCmsg& msg)
 {
-	std::vector<std::string>	params;
 	Channel*					channel;
 
-	params.push_back(msg.getParameters()[0]);
+	channel = getChannelByName(msg.getParameters()[0]);
 
-	channel = getChannelByName(msg.getParameters()[0].substr(1));
-	std::cout << "Channel : " << msg.getParameters()[0].substr(1) << std::endl;
+	std::cout << "Channel : " << msg.getParameters()[0] << std::endl;
+
 	if (channel == NULL)
 	{
 		std::cout << "Channel " << msg.getParameters()[0] << " créé" << std::endl;
+
 		channel = new Channel(msg.getParameters()[0]);
 		channels.push_back(channel);
 	}
+
 	channel->addClient(msg.getClient());
 }
 
