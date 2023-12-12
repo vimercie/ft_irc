@@ -8,7 +8,8 @@ SRC=		main.cpp		\
 			Channel.cpp		\
 			IRCmsg.cpp		\
 			Command.cpp		\
-			Utils.cpp
+			Utils.cpp		\
+			Error.cpp		\
 
 INCDIR=		inc/
 

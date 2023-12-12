@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/12 15:16:15 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 16:58:31 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,37 +16,118 @@
 #include "../inc/Server.hpp"
 #include "../inc/Utils.hpp"
 
-void Server::exec(const IRCmsg& msg)
+int Server::exec(const IRCmsg& msg)
 {
-    typedef void (Server::*cmd)(const IRCmsg& msg);
+    typedef int (Server::*cmd)(const IRCmsg& msg);
 
     std::map<std::string, cmd> cmds;
 
     cmds["NICK"] = &Server::nick;
     cmds["USER"] = &Server::user;
+	cmds["PASS"] = &Server::pass;
+	cmds["QUIT"] = &Server::quit;
 
 	cmds["JOIN"] = &Server::join;
 
     std::map<std::string, cmd>::iterator it = cmds.find(msg.getCommand());
 
+	std::cout << "Command : " << msg.toString();
+	std::cout << "Client : " << msg.getClient()->getNickname() << std::endl;
+
+	if (msg.getClient() == NULL)
+		std::cout << "Client dont exist" << std::endl;
+
     if (it != cmds.end())
-		(this->*(it->second))(msg);
+		return (this->*(it->second))(msg);
 	else
 		std::cout << "Command not found" << std::endl;
+
+	std::cout << std::endl;
+
+	return 1;
 }
 
 // user related commands
-void	Server::nick(const IRCmsg& msg)
+int	Server::nick(const IRCmsg& msg)
 {
+	if (msg.getClient()->getPassword() != this->password)
+	{
+		err_passwdmismatch(msg);
+		std::cout << "Client " << msg.getParameters()[0] << " kicked" << std::endl;
+		removeClient(msg.getClient());
+		return 1;
+	}
+
 	msg.getClient()->setNickname(msg.getParameters()[0]);
 	welcome(msg.getClient());
+
+	return 0;
 }
 
-void	Server::user(const IRCmsg& msg)
+int	Server::user(const IRCmsg& msg)
 {
 	msg.getClient()->setUsername(msg.getParameters()[0]);
 	msg.getClient()->setHostname(msg.getParameters()[1]);
 	msg.getClient()->setRealname(msg.getTrailing());
+
+	return 0;
+}
+
+int	Server::pass(const IRCmsg& msg)
+{
+	msg.getClient()->setPassword(msg.getParameters()[0]);
+
+	return 0;
+}
+
+int	Server::quit(const IRCmsg& msg)
+{
+	std::cout << "Client " << msg.getClient()->getNickname() << " quit (" << msg.getTrailing() << ")" << std::endl;
+	removeClient(msg.getClient());
+
+	return 0;
+}
+
+int	Server::join(const IRCmsg& msg)
+{
+	Channel*					channel;
+
+	channel = getChannelByName(msg.getParameters()[0]);
+
+	std::cout << "Channel : " << msg.getParameters()[0] << std::endl;
+
+	if (channel == NULL)
+	{
+		std::cout << "Channel " << msg.getParameters()[0] << " créé" << std::endl;
+
+		channel = new Channel(msg.getParameters()[0]);
+		channels.push_back(channel);
+	}
+
+	channel->addClient(msg.getClient());
+	return 0;
+}
+
+int	Server::privmsg(const IRCmsg& msg)
+{
+	IRCmsg						response;
+	Channel*					channel;
+
+	channel = getChannelByName(msg.getParameters()[0].substr(1));
+	if (channel == NULL)
+	{
+		;
+	}
+	else
+	{
+		response.setPrefix(msg.getClient()->getNickname());
+		response.setCommand("PRIVMSG");
+		response.setParameters(msg.getParameters());
+		response.setTrailing(msg.getTrailing());
+		response.setClient(msg.getClient());
+		broadcast(response, channel->getClients());
+	}
+	return 0;
 }
 
 void	Server::welcome(Client* client)

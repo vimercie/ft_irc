@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/12 15:15:30 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 16:58:55 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void	Server::serverLoop()
 	}
 }
 
-void Server::acceptConnections()
+void	Server::acceptConnections()
 {
 	struct sockaddr_in	cli;
 	socklen_t			len = sizeof(cli);
@@ -156,6 +156,43 @@ void Server::acceptConnections()
 	nfds++;
 
 	std::cout << "Nouvelle connexion acceptée" << std::endl;
+}
+
+void	Server::closeConnection(int fd)
+{
+	for (nfds_t i = 0; i < nfds; i++)
+	{
+		if (fds[i].fd == fd)
+		{
+			close(fd);
+			fds[i].fd = -1;
+			break;
+		}
+	}
+	nfds--;
+}
+
+void	Server::removeClient(Client* client)
+{
+	// Fermeture de la connexion
+	closeConnection(client->getSocket().fd);
+
+	// Suppression du client des channels
+	for (std::vector<Channel*>::iterator it = client->getChannels().begin(); it != client->getChannels().end(); it++)
+		(*it)->removeClient(client);
+
+	// Suppression du client de la liste des clients
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if (*it == client)
+		{
+			clients.erase(it);
+			break;
+		}
+	}
+
+	// Suppression du client
+	delete client;
 }
 
 void	Server::communicate()
@@ -229,6 +266,11 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 	return res;
 }
 
+void	Server::sendMsg(int fd, const std::string& msg)
+{
+	if (send(fd, msg.c_str(), msg.length(), 0) < 0)
+		std::cerr << "Erreur d'envoi du message." << std::endl;
+}
 
 // utils
 Client*	Server::getClientByFd(int fd)
@@ -248,46 +290,6 @@ Channel*	Server::getChannelByName(const std::string& name)
 		if ((*it)->getName() == name)
 			return *it;
 	return NULL;
-}
-
-void Server::join(const IRCmsg& msg)
-{
-	Channel*					channel;
-
-	channel = getChannelByName(msg.getParameters()[0]);
-
-	std::cout << "Channel : " << msg.getParameters()[0] << std::endl;
-
-	if (channel == NULL)
-	{
-		std::cout << "Channel " << msg.getParameters()[0] << " créé" << std::endl;
-
-		channel = new Channel(msg.getParameters()[0]);
-		channels.push_back(channel);
-	}
-
-	channel->addClient(msg.getClient());
-}
-
-void	Server::privmsg(const IRCmsg& msg)
-{
-	IRCmsg						response;
-	Channel*					channel;
-
-	channel = getChannelByName(msg.getParameters()[0].substr(1));
-	if (channel == NULL)
-	{
-		;
-	}
-	else
-	{
-		response.setPrefix(msg.getClient()->getNickname());
-		response.setCommand("PRIVMSG");
-		response.setParameters(msg.getParameters());
-		response.setTrailing(msg.getTrailing());
-		response.setClient(msg.getClient());
-		broadcast(response, channel->getClients());
-	}
 }
 
 void	Server::broadcast(const IRCmsg& msg)

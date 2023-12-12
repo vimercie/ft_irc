@@ -22,7 +22,6 @@ IRCmsg::IRCmsg(Client* client, const std::string& message) : client(client)
 
 IRCmsg::~IRCmsg() {}
 
-
 // getters
 Client* IRCmsg::getClient() const {return client;}
 std::string IRCmsg::getPrefix() const {return prefix;}

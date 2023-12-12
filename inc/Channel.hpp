@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/10 17:20:28 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 15:32:54 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,12 @@ class Channel
 		Channel(std::string name);
 		~Channel();
 
-		void					addClient(Client* client);
 		std::string				getName(void) const;
 		std::string				getNamesList(void);
 		std::vector<Client*>	getClients(void) const;
+
+		void					addClient(Client* client);
+		void					removeClient(Client* client);
 };
 
 #endif

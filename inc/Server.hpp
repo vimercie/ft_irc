@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/12 15:09:14 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 16:56:46 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,20 +47,38 @@ class Server
 	// poll
 		struct pollfd			fds[MAX_CLIENTS + 1];
 		nfds_t 					nfds;
-	// channels
+
 		std::vector<Channel*>	channels;
 		std::vector<Client*>	clients;
 
 	// methods
-	
-	// server init
-		void		createSocket();
-		void		configureServerAddress();
-		void		bindSocket();
-		void		startListening();
-		void		initializePoll();
 
-		void		acceptConnections();
+	// server init
+		void	createSocket();
+		void	configureServerAddress();
+		void	bindSocket();
+		void	startListening();
+		void	initializePoll();
+
+		void	acceptConnections();
+		void	closeConnection(int fd);
+		void	removeClient(Client* client);
+
+	// cmds
+		int	exec(const IRCmsg& msg);
+
+		int	nick(const IRCmsg& msg);
+		int	user(const IRCmsg& msg);
+		int	pass(const IRCmsg& msg);
+		int	quit(const IRCmsg& msg);
+
+		int	join(const IRCmsg& msg);
+		int	privmsg(const IRCmsg& msg);
+
+		void	welcome(Client* client);
+
+	// errors
+		int	err_passwdmismatch(const IRCmsg& msg);
 
 	public:
 		Server(int port, const std::string& password);
@@ -74,6 +92,7 @@ class Server
 
 		void					communicate();
 		std::vector<IRCmsg*>	readMsg(int	fd);
+		void					sendMsg(int fd, const std::string& msg);
 
 	// channels broadcast
 		void					broadcast(const IRCmsg& msg);
@@ -81,13 +100,6 @@ class Server
 		void					broadcast(const IRCmsg& msg, const std::vector<Channel*>& channels);
 		void					broadcast(const IRCmsg& msg, const std::vector<Client*>& clients, const std::vector<Channel*>& channels);
 
-	// cmds
-		void					exec(const IRCmsg& msg);
-		void					nick(const IRCmsg& msg);
-		void					user(const IRCmsg& msg);
-		void					welcome(Client* client);
-		void					join(const IRCmsg& msg);
-		void					privmsg(const IRCmsg& msg);
 
 	// utils
 		Client*					getClientByFd(int fd);

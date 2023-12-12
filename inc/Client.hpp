@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:13:05 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/10 02:52:43 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 15:47:53 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include <map>
 # include <poll.h>
 
-class Command;
+class Channel;
 class IRCmsg;
 
 class	Client
@@ -28,14 +28,16 @@ class	Client
 	typedef void (Client::*cmd)(const IRCmsg& msg);
 
 	private:
-		pollfd		*socket;
+		pollfd					*socket;
 
-		std::string	nickname;
-		std::string	username;
-		std::string	hostname;
-		std::string realname;
-		std::string	password;
-		std::string	mode;
+		std::string				nickname;
+		std::string				username;
+		std::string				hostname;
+		std::string				realname;
+		std::string				password;
+		std::string				mode;
+
+		std::vector<Channel*>	channels;
 
 	public:
 		Client(pollfd *socket);
@@ -44,13 +46,14 @@ class	Client
 		bool	operator==(const Client& other) const;
 
 		// getters
-		pollfd		getSocket() const;
-		std::string	getNickname() const;
-		std::string	getUsername() const;
-		std::string	getHostname() const;
-		std::string	getRealname() const;
-		std::string	getPassword() const;
-		std::string	getMode() const;
+		pollfd					getSocket() const;
+		std::string				getNickname() const;
+		std::string				getUsername() const;
+		std::string				getHostname() const;
+		std::string				getRealname() const;
+		std::string				getPassword() const;
+		std::string				getMode() const;
+		std::vector<Channel*>	getChannels(void);
 
 		// setters
 		void	setNickname(const std::string& nickname);
@@ -58,14 +61,11 @@ class	Client
 		void	setHostname(const std::string& hostname);
 		void	setRealname(const std::string& realname);
 		void	setPassword(const std::string& password);
+		void	setMode(const std::string& mode);
 
-		// commands
-		// void	execCmd(const IRCmsg& msg);
-		// void	nick(const IRCmsg& msg);
-		// void	user(const IRCmsg& msg);
-		// void	sendMsg(const IRCmsg& msg);
-
-		std::map<std::string, cmd>	cmds;
+		// methods
+		void	addChannel(Channel* channel);
+		void	removeChannel(Channel* channel);
 };
 
 #endif

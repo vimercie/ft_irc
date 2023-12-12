@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/09 18:55:30 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 16:38:18 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,6 @@ Channel::~Channel()
 	std::cout << "Channel " + name + " destroyed" << std::endl;
 }
 
-void	Channel::addClient(Client* client)
-{
-	clients.push_back(client);
-}
-
 std::string	Channel::getName(void) const
 {
 	return name;
@@ -58,4 +53,22 @@ std::string	Channel::getNamesList(void)
 std::vector<Client*>	Channel::getClients(void) const
 {
 	return clients;
+}
+
+
+void	Channel::addClient(Client* client)
+{
+	clients.push_back(client);
+	client->addChannel(this);
+}
+
+void	Channel::removeClient(Client* client)
+{
+	std::vector<Client*>::iterator it = std::find(clients.begin(), clients.end(), client);
+
+	if (it != clients.end())
+	{
+		std::cout << "Client " << client->getNickname() << " removed from channel " << name << std::endl;
+		clients.erase(it);
+	}
 }
