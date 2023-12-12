@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/12 18:42:56 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/12 19:02:33 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,6 @@ int Server::exec(const IRCmsg& msg)
 	cmds["PRIVMSG"]	= &Server::privmsg;
 
     std::map<std::string, cmd>::iterator it = cmds.find(msg.getCommand());
-
-	std::cout << "Command : " << msg.toString();
-	std::cout << "Client : " << msg.getClient()->getNickname() << std::endl;
 
 	if (msg.getClient() == NULL)
 		std::cout << "Client dont exist" << std::endl;
@@ -105,11 +102,6 @@ int	Server::join(const IRCmsg& msg)
 	return 0;
 }
 
-void	print_clients(std::vector<Client*> clients)
-{
-	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
-		std::cout << (*it)->getNickname() << std::endl;
-}
 
 int	Server::privmsg(const IRCmsg& msg)
 {
@@ -119,11 +111,11 @@ int	Server::privmsg(const IRCmsg& msg)
 	channel = getChannelByName(msg.getParameters()[0]);
 	if (channel == NULL)
 	{
-		;
+		std::cout << "Channel " << msg.getParameters()[0] << " not found" << std::endl;
+		return 1;
 	}
 	else
 	{
-		print_clients(channel->getClients());
 		response.setPrefix(msg.getClient()->getNickname());
 		response.setCommand("PRIVMSG");
 		response.setParameters(msg.getParameters());
