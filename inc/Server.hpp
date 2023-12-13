@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/13 05:12:01 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 15:57:29 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,10 +76,11 @@ class Server
 		int	join(const IRCmsg& msg);
 		int	privmsg(const IRCmsg& msg);
 
-		void	welcome(Client* client);
+		int	welcome(Client* client);
 
 	// errors
 		std::string	err_passwdmismatch();
+		std::string	err_unknowncommand(const IRCmsg& msg);
 
 	public:
 		Server(int port, const std::string& password);

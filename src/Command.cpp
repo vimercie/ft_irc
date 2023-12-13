@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/13 04:51:48 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 15:57:59 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int Server::exec(const IRCmsg& msg)
 
 	std::cout << std::endl;
 
-	return 1;
+	return 0;
 }
 
 // user related commands
@@ -54,6 +54,7 @@ int	Server::nick(const IRCmsg& msg)
 	}
 
 	msg.getClient()->setNickname(msg.getParameters()[0]);
+
 	welcome(msg.getClient());
 
 	return 0;
@@ -138,7 +139,7 @@ int	Server::privmsg(const IRCmsg& msg)
 }
 
 
-void	Server::welcome(Client* client)
+int	Server::welcome(Client* client)
 {
 	IRCmsg	msg;
 
@@ -148,8 +149,9 @@ void	Server::welcome(Client* client)
 	msg.setTrailing("Wesh wesh wesh " + client->getNickname());
 
 	sendMsg(client->getSocket().fd, msg.toString());
-}
 
+	return 0;
+}
 
 // channel related commands
 

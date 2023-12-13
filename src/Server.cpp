@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/13 05:23:36 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 16:14:51 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,8 +191,13 @@ void	Server::removeClient(Client* client)
 	closeConnection(client->getSocket().fd);
 
 	// Suppression du client des channels
-	for (std::vector<Channel*>::iterator it = client->getChannels().begin(); it != client->getChannels().end(); it++)
-		(*it)->removeClient(client);
+	 std::vector<Channel*> channelsCopy = client->getChannels();
+
+    // Suppression du client des canaux (en utilisant la copie)
+    for (std::vector<Channel*>::iterator it = channelsCopy.begin(); it != channelsCopy.end(); it++)
+	{
+        (*it)->removeClient(client);
+	}
 
 	// Suppression du client de la liste des clients
 	std::vector<Client*>::iterator it = std::find(clients.begin(), clients.end(), client);
