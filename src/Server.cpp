@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/13 05:12:19 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 05:23:36 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,8 +183,6 @@ void	Server::closeConnection(int fd)
 		}
 	}
 	nfds--;
-
-	std::cout << "Connexion fermée avec fd = " << fd << std::endl;
 }
 
 void	Server::removeClient(Client* client)
@@ -203,8 +201,6 @@ void	Server::removeClient(Client* client)
 		delete *it;
 		clients.erase(it);
 	}
-
-	std::cout << "Client " << client->getNickname() << " supprimé" << std::endl;
 }
 
 void	Server::communicate()
@@ -257,17 +253,12 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 	// Si on a reçu des données
 	if (bytes_read > 0)
 	{
-		std::cout << "buffer = " << buffer << std::endl;
-
 		std::vector<std::string>	msgs = splitString(buffer, "\r\n");
 
 		for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); it++)
 		{
 			if (it->empty())
 				continue;
-
-			std::cout << "Command received: " << *it << std::endl;
-			std::cout << "Client fd = " << fd << std::endl;
 
 			res.push_back(new IRCmsg(getClientByFd(fd), *it));
 		}
