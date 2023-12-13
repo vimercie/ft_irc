@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/13 16:14:51 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 17:06:17 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,6 +241,9 @@ void	Server::communicate()
 				if (exec(*(*it)) != 0)
 					break;
 			}
+			for (std::vector<IRCmsg*>::iterator it = messages.begin(); it != messages.end(); it++)
+				delete *it;
+			messages.clear();
 		}
 	}
 }
