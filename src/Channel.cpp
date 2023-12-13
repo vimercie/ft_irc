@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/12 18:37:02 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 04:05:56 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,9 @@ Channel::~Channel()
 	std::cout << "Channel " + name + " destroyed" << std::endl;
 }
 
-std::string	Channel::getName(void) const
-{
-	return name;
-}
+// getters
+std::string	Channel::getName(void) const {return name;}
+std::vector<Client*>	Channel::getClients(void) const {return clients;}
 
 std::string	Channel::getNamesList(void)
 {
@@ -48,11 +47,6 @@ std::string	Channel::getNamesList(void)
 		result += (*it)->getNickname() + " ";
 
 	return result;
-}
-
-std::vector<Client*>	Channel::getClients(void) const
-{
-	return clients;
 }
 
 

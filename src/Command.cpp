@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/12 19:02:33 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 04:51:48 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,6 @@ int Server::exec(const IRCmsg& msg)
 
     std::map<std::string, cmd>::iterator it = cmds.find(msg.getCommand());
 
-	if (msg.getClient() == NULL)
-		std::cout << "Client dont exist" << std::endl;
-
     if (it != cmds.end())
 		return (this->*(it->second))(msg);
 	else
@@ -48,10 +45,10 @@ int Server::exec(const IRCmsg& msg)
 // user related commands
 int	Server::nick(const IRCmsg& msg)
 {
-	if (msg.getClient()->getPassword() != this->password)
+	if (!msg.getClient()->isAuthenticated())
 	{
-		err_passwdmismatch(msg);
-		std::cout << "Client " << msg.getParameters()[0] << " kicked" << std::endl;
+		std::cout << "Client " << msg.getClient()->getNickname() << " NOT authenticated" << std::endl;
+		sendMsg(msg.getClient()->getSocket().fd, err_passwdmismatch());
 		removeClient(msg.getClient());
 		return 1;
 	}
@@ -73,7 +70,15 @@ int	Server::user(const IRCmsg& msg)
 
 int	Server::pass(const IRCmsg& msg)
 {
-	msg.getClient()->setPassword(msg.getParameters()[0]);
+	if (msg.getParameters()[0] != this->password)
+	{
+		std::cout << "Wrong password" << std::endl;
+		sendMsg(msg.getClient()->getSocket().fd, err_passwdmismatch());
+		removeClient(msg.getClient());
+		return 1;
+	}
+
+	msg.getClient()->setPass(true);
 
 	return 0;
 }

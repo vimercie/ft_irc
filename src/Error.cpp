@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:41:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/12 16:12:26 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 04:47:25 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,16 @@
 #include "../inc/Client.hpp"
 #include "../inc/IRCmsg.hpp"
 
-int	Server::err_passwdmismatch(const IRCmsg& msg)
+std::string	Server::err_passwdmismatch()
 {
 	IRCmsg	response;
 
 	response.setCommand("464");
 	response.setPrefix("localhost");
-	response.setParameters(std::vector<std::string>(1, msg.getClient()->getNickname()));
+	response.setParameters(std::vector<std::string>(1, "*"));
 	response.setTrailing("Password incorrect");
 
-	sendMsg(msg.getClient()->getSocket().fd, response.toString());
+	std::cout << "Sending: " << response.toString() << std::endl;
 
-	return 1;
+	return (response.toString());
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/12 17:08:04 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 05:12:19 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,11 @@ Server::~Server()
 		delete *it;
 	channels.clear();
 
+	// Suppression des clients
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+		delete *it;
+	clients.clear();
+
 	std::cout << "Server destroyed" << std::endl;
 }
 
@@ -63,6 +68,14 @@ void	Server::createSocket()
 		std::cerr << "Erreur de création du socket" << std::endl;
 		exit(1);
 	}
+
+	// Configurer SO_REUSEADDR
+	int reuse = 1;
+	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+
+	// Configurer TCP_NODELAY
+	int nodelay = 1;
+	setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay));
 }
 
 void	Server::configureServerAddress()
@@ -160,7 +173,7 @@ void	Server::acceptConnections()
 
 void	Server::closeConnection(int fd)
 {
-	for (nfds_t i = 0; i < nfds; i++)
+	for (nfds_t i = 1; i <= nfds; i++)
 	{
 		if (fds[i].fd == fd)
 		{
@@ -170,6 +183,8 @@ void	Server::closeConnection(int fd)
 		}
 	}
 	nfds--;
+
+	std::cout << "Connexion fermée avec fd = " << fd << std::endl;
 }
 
 void	Server::removeClient(Client* client)
@@ -182,17 +197,14 @@ void	Server::removeClient(Client* client)
 		(*it)->removeClient(client);
 
 	// Suppression du client de la liste des clients
-	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+	std::vector<Client*>::iterator it = std::find(clients.begin(), clients.end(), client);
+	if (it != clients.end())
 	{
-		if (*it == client)
-		{
-			clients.erase(it);
-			break;
-		}
+		delete *it;
+		clients.erase(it);
 	}
 
-	// Suppression du client
-	delete client;
+	std::cout << "Client " << client->getNickname() << " supprimé" << std::endl;
 }
 
 void	Server::communicate()
@@ -221,14 +233,12 @@ void	Server::communicate()
 			// Lecture des messages entrants
 			for (std::vector<IRCmsg*>::iterator it = messages.begin(), end = messages.end(); it != end; it++)
 			{
-				if ((*it)->getCommand().empty())
-					continue;
-
 				// Affichage du message reçu
 				std::cout << "<" + (*it)->getClient()->getNickname() + ">" + " : " + (*it)->toString();
 
 				// Exécution des commandes
-				exec(*(*it));
+				if (exec(*(*it)) != 0)
+					break;
 			}
 		}
 	}
@@ -247,10 +257,20 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 	// Si on a reçu des données
 	if (bytes_read > 0)
 	{
+		std::cout << "buffer = " << buffer << std::endl;
+
 		std::vector<std::string>	msgs = splitString(buffer, "\r\n");
 
 		for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); it++)
+		{
+			if (it->empty())
+				continue;
+
+			std::cout << "Command received: " << *it << std::endl;
+			std::cout << "Client fd = " << fd << std::endl;
+
 			res.push_back(new IRCmsg(getClientByFd(fd), *it));
+		}
 	}
 	// Si le client s'est déconnecté
 	else if (bytes_read == 0)

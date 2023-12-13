@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:13:05 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/12 15:47:53 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 04:32:54 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ class	Client
 		std::string				username;
 		std::string				hostname;
 		std::string				realname;
-		std::string				password;
 		std::string				mode;
+		bool					pass;
 
 		std::vector<Channel*>	channels;
 
@@ -51,17 +51,17 @@ class	Client
 		std::string				getUsername() const;
 		std::string				getHostname() const;
 		std::string				getRealname() const;
-		std::string				getPassword() const;
 		std::string				getMode() const;
 		std::vector<Channel*>	getChannels(void);
+		bool					isAuthenticated() const;
 
 		// setters
 		void	setNickname(const std::string& nickname);
 		void	setUsername(const std::string& username);
 		void	setHostname(const std::string& hostname);
 		void	setRealname(const std::string& realname);
-		void	setPassword(const std::string& password);
 		void	setMode(const std::string& mode);
+		void	setPass(bool pass);
 
 		// methods
 		void	addChannel(Channel* channel);

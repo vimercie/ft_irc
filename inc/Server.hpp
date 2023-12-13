@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/12 17:08:16 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/13 05:12:01 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <netinet/ip.h>
+# include <netinet/tcp.h>
 # include <unistd.h>
 # include <cstring>
 # include <cstdlib>
@@ -78,7 +79,7 @@ class Server
 		void	welcome(Client* client);
 
 	// errors
-		int	err_passwdmismatch(const IRCmsg& msg);
+		std::string	err_passwdmismatch();
 
 	public:
 		Server(int port, const std::string& password);
