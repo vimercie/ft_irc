@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/13 04:05:56 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/15 00:12:42 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,6 @@ Channel::Channel(std::string name) : name(name)
 
 Channel::~Channel()
 {
-	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); it++)
-		delete *it;
 	clients.clear();
 
 	std::cout << "Channel " + name + " destroyed" << std::endl;
