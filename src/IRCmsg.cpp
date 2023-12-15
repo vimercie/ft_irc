@@ -55,7 +55,7 @@ void IRCmsg::fromString(const std::string& message)
 
 	it = parseParameters(it, message);
 
-	getNextWord(it, message, trailing);
+	parseTrailing(it, message);
 }
 
 std::string IRCmsg::toString() const
@@ -107,6 +107,31 @@ std::string::const_iterator	IRCmsg::parseParameters(std::string::const_iterator&
 		parameters.push_back(param);
 		param.clear();
 	}
+
+	return it;
+}
+
+std::string::const_iterator	IRCmsg::parseTrailing(std::string::const_iterator& it, const std::string& message)
+{
+	std::string res;
+	std::string nospcrlfcl = ":\r\n";
+
+	if (*it == ':')
+	{
+		res += *it;
+		it++;
+	}
+
+	while (it != message.end())
+	{
+		if (nospcrlfcl.find(*it) != std::string::npos)
+			break ;
+
+		res += *it;
+		it++;
+	}
+
+	setTrailing(res);
 
 	return it;
 }

@@ -54,6 +54,7 @@ class IRCmsg
 
 	// parsing
 		std::string::const_iterator	parseParameters(std::string::const_iterator& it, const std::string& message);
+		std::string::const_iterator	parseTrailing(std::string::const_iterator& it, const std::string& message);
 
 	// debug
 		void	displayMessage() const;
