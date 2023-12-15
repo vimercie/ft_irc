@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/15 00:12:42 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/15 00:16:45 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,7 @@ Channel::Channel(std::string name) : name(name)
 	std::cout << "Channel " + this->name + " created" << std::endl;
 }
 
-Channel::~Channel()
-{
-	clients.clear();
-
-	std::cout << "Channel " + name + " destroyed" << std::endl;
-}
+Channel::~Channel() {std::cout << "Channel " + name + " destroyed" << std::endl;}
 
 // getters
 std::string	Channel::getName(void) const {return name;}

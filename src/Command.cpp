@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/13 15:57:59 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/15 00:30:17 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ int	Server::privmsg(const IRCmsg& msg)
 	else
 	{
 		response.setPrefix(msg.getClient()->getNickname());
-		response.setCommand("PRIVMSG");
+		response.setCommand(msg.getCommand());
 		response.setParameters(msg.getParameters());
 		response.setTrailing(msg.getTrailing());
 		response.setClient(msg.getClient());
