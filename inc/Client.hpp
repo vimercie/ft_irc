@@ -6,12 +6,14 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:13:05 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/13 04:32:54 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 20:33:16 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CLIENT_H
 # define CLIENT_H
+
+# define BUFFER_SIZE 512
 
 # include <iostream>
 # include <string>
@@ -19,6 +21,8 @@
 # include <algorithm>
 # include <map>
 # include <poll.h>
+# include <sys/socket.h>
+# include <cerrno>
 
 class Channel;
 class IRCmsg;
@@ -28,16 +32,20 @@ class	Client
 	typedef void (Client::*cmd)(const IRCmsg& msg);
 
 	private:
-		pollfd					*socket;
+		pollfd						*socket;
 
-		std::string				nickname;
-		std::string				username;
-		std::string				hostname;
-		std::string				realname;
-		std::string				mode;
-		bool					pass;
+		std::vector<std::string>	recvBuffer;
+		std::vector<std::string>	sendBuffer;
 
-		std::vector<Channel*>	channels;
+		std::string					nickname;
+		std::string					username;
+		std::string					hostname;
+		std::string					realname;
+		std::string					mode;
+		bool						pass;
+		bool						toDisconnect;
+
+		std::vector<Channel*>		channels;
 
 	public:
 		Client(pollfd *socket);
@@ -46,14 +54,17 @@ class	Client
 		bool	operator==(const Client& other) const;
 
 		// getters
-		pollfd					getSocket() const;
-		std::string				getNickname() const;
-		std::string				getUsername() const;
-		std::string				getHostname() const;
-		std::string				getRealname() const;
-		std::string				getMode() const;
-		std::vector<Channel*>	getChannels(void);
-		bool					isAuthenticated() const;
+		pollfd								getSocket() const;
+		const std::vector<std::string>&		getRecvBuffer() const;
+		const std::vector<std::string>&		getSendBuffer() const;
+		const std::string&					getNickname() const;
+		const std::string&					getUsername() const;
+		const std::string&					getHostname() const;
+		const std::string&					getRealname() const;
+		const std::string&					getMode() const;
+		const std::vector<Channel*>&		getChannels(void);
+		bool								isAuthenticated() const;
+		bool								isToDisconnect() const;
 
 		// setters
 		void	setNickname(const std::string& nickname);
@@ -62,8 +73,17 @@ class	Client
 		void	setRealname(const std::string& realname);
 		void	setMode(const std::string& mode);
 		void	setPass(bool pass);
+		void	setToDisconnect(bool toDisconnect);
 
 		// methods
+		int		readFromSocket();
+		int		sendToSocket();
+
+		void	appendToRecvBuffer(const std::string& data);
+		void	appendToSendBuffer(const std::string& data);
+		void	clearRecvBuffer();
+		void	clearSendBuffer();
+
 		void	addChannel(Channel* channel);
 		void	removeChannel(Channel* channel);
 };

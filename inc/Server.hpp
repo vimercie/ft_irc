@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/16 04:24:45 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 20:36:17 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,12 @@ class Server
 		void	acceptConnections();
 		void	closeConnection(int fd);
 		void	removeClient(Client* client);
+	
+	// methods
+		void	processCommands(Client* client);
 
 	// cmds
+
 		int	exec(const IRCmsg& msg);
 
 		int	nick(const IRCmsg& msg);
@@ -89,13 +93,13 @@ class Server
 		~Server();
 
 	// getters
-		std::vector<Channel*>	getChannels() const;
+		const std::vector<Client*>&		getClients() const;
+		const std::vector<Channel*>&	getChannels() const;
 
 	// methods
 		void					serverLoop();
 
 		void					communicate();
-		std::vector<IRCmsg>		readMsg(int	fd);
 		void					sendMsg(int fd, const std::string& msg);
 
 	// utils

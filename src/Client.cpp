@@ -6,14 +6,15 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/13 05:20:50 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 20:34:21 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Client.hpp"
 #include "../inc/IRCmsg.hpp"
+#include "../inc/Utils.hpp"
 
-Client::Client(pollfd	*socket) : socket(socket), pass(false) {std::cout << "Client created (fd: " << socket->fd << ")" << std::endl;}
+Client::Client(pollfd	*socket) : socket(socket), pass(false), toDisconnect(false) {std::cout << "Client created (fd: " << socket->fd << ")" << std::endl;}
 
 Client::~Client() {std::cout << "Client destroyed" << std::endl;}
 
@@ -21,13 +22,16 @@ bool	Client::operator==(const Client& other) const {return nickname == other.nic
 
 // getters
 pollfd		Client::getSocket() const {return *socket;}
-std::string	Client::getNickname() const {return nickname;}
-std::string	Client::getUsername() const {return username;}
-std::string	Client::getHostname() const {return hostname;}
-std::string	Client::getRealname() const {return realname;}
-std::string	Client::getMode() const {return mode;}
-std::vector<Channel*>	Client::getChannels(void) {return channels;}
+const std::vector<std::string>&	Client::getRecvBuffer() const {return recvBuffer;}
+const std::vector<std::string>&	Client::getSendBuffer() const {return sendBuffer;}
+const std::string&	Client::getNickname() const {return nickname;}
+const std::string&	Client::getUsername() const {return username;}
+const std::string&	Client::getHostname() const {return hostname;}
+const std::string&	Client::getRealname() const {return realname;}
+const std::string&	Client::getMode() const {return mode;}
+const std::vector<Channel*>&	Client::getChannels(void) {return channels;}
 bool		Client::isAuthenticated() const {return pass;}
+bool		Client::isToDisconnect() const {return toDisconnect;}
 
 // setters
 void	Client::setNickname(const std::string& nickname) {this->nickname = nickname;}
@@ -36,8 +40,47 @@ void	Client::setHostname(const std::string& hostname) {this->hostname = hostname
 void	Client::setRealname(const std::string& realname) {this->realname = realname;}
 void	Client::setMode(const std::string& mode) {this->mode = mode;}
 void	Client::setPass(bool pass) {this->pass = pass;}
+void	Client::setToDisconnect(bool toDisconnect) {this->toDisconnect = toDisconnect;}
 
 // methods
+int	Client::readFromSocket()
+{
+	char	buffer[BUFFER_SIZE + 1];
+	int		bytes_read;
+
+	memset(buffer, 0, BUFFER_SIZE + 1);
+
+	bytes_read = recv(socket->fd, buffer, BUFFER_SIZE, MSG_DONTWAIT);
+
+	if (bytes_read < 0 && errno != EAGAIN)
+		return -1;
+	else if (bytes_read == 0)
+	{
+		setToDisconnect(true);
+		return 1;
+	}
+	else if (bytes_read > 0)
+	{
+		std::vector<std::string>	msgs = splitString(buffer, "\r\n");
+
+		for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); it++)
+		{
+			if (it->empty())
+				continue;
+
+			appendToRecvBuffer(*it);
+		}
+	}
+
+	return 0;
+}
+
+void	Client::appendToRecvBuffer(const std::string& msg) {recvBuffer.push_back(msg);}
+void	Client::appendToSendBuffer(const std::string& msg) {sendBuffer.push_back(msg);}
+
+void	Client::clearRecvBuffer() {recvBuffer.clear();}
+void	Client::clearSendBuffer() {sendBuffer.clear();}
+
 void	Client::addChannel(Channel* channel)
 {
 	channels.push_back(channel);

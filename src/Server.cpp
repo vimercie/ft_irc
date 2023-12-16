@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/16 04:42:13 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 20:36:10 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ Server::~Server()
 }
 
 // getters
-std::vector<Channel*>	Server::getChannels() const {return channels;}
+const std::vector<Client*>&		Server::getClients() const {return clients;}
+const std::vector<Channel*>&	Server::getChannels() const {return channels;}
 
 
 void	Server::createSocket()
@@ -187,89 +188,74 @@ void	Server::closeConnection(int fd)
 	nfds--;
 }
 
-void	Server::removeClient(Client* client)
+void Server::removeClient(Client* client)
 {
-	// Fermeture de la connexion
-	closeConnection(client->getSocket().fd);
+    // Fermeture de la connexion
+    closeConnection(client->getSocket().fd);
 
     // Suppression du client des canaux
-	std::vector<Channel*> channelsCopy = client->getChannels();
+    std::vector<Channel*> channelsCopy = client->getChannels();
     for (std::vector<Channel*>::iterator it = channelsCopy.begin(); it != channelsCopy.end(); it++)
-		(*it)->removeClient(client);
+        (*it)->removeClient(client);
 
-	// Suppression du client de la liste des clients
-	std::vector<Client*>::iterator it = std::find(clients.begin(), clients.end(), client);
-	if (it != clients.end())
-	{
-		delete *it;
-		clients.erase(it);
-	}
+    // Suppression du client de la liste des clients
+    clients.erase(std::remove(clients.begin(), clients.end(), client), clients.end());
+    delete client;
 }
 
-void	Server::communicate()
+void Server::communicate()
 {
-	std::vector<IRCmsg>		messages;
-	std::vector<Client*>	clientsCopy = clients;
+    std::vector<Client*> toRemove;
 
-	for (std::vector<Client*>::iterator clientIt = clientsCopy.begin(); clientIt != clientsCopy.end(); clientIt++)
-	{
-		// Si le client est prêt à être lu
-		if ((*clientIt)->getSocket().revents & POLLIN)
-		{
-			messages = readMsg((*clientIt)->getSocket().fd);
+    for (std::vector<Client*>::iterator clientIt = clients.begin(); clientIt != clients.end(); ++clientIt)
+    {
+        Client* client = *clientIt;
 
-			// Lecture des messages entrants
-			for (std::vector<IRCmsg>::iterator it = messages.begin(), end = messages.end(); it != end; it++)
+        client->clearRecvBuffer();
+
+        // Si le client est prêt à être lu
+        if (client->getSocket().revents & POLLIN)
+        {
+            if (client->readFromSocket() != 0)
+            {
+                toRemove.push_back(client);
+                continue;
+            }
+
+            for (std::vector<std::string>::const_iterator it = client->getRecvBuffer().begin(); it != client->getRecvBuffer().end(); ++it)
 			{
-				// Affichage du message reçu
-				std::cout << "<" + (*it).getClient()->getNickname() + ">" + " : " + (*it).toString();
+                std::cout << "<" + client->getNickname() + ">" + " : " + *it << std::endl;
 
-				// Exécution des commandes
-				if (exec(*it) != 0)
-					break;
-			}
+                IRCmsg msg(client, *it);
 
-			messages.clear();
-		}
-	}
+                if (exec(msg) != 0)
+                    break;
+            }
+        }
+    }
+
+    // Supprimer les clients après le traitement pour éviter les erreurs d'accès invalide
+    for (std::vector<Client*>::iterator it = toRemove.begin(); it != toRemove.end(); ++it)
+        removeClient(*it);
 }
 
-std::vector<IRCmsg>	Server::readMsg(int fd)
-{
-	char					buffer[1024];
-	ssize_t					bytes_read = 0;
-	std::vector<IRCmsg>		res;
 
-	memset(buffer, 0, sizeof(buffer));
+// void	Server::processCommands(Client* client)
+// {
+//     const std::string& recvData = client->getRecvBuffer();
 
-	bytes_read = recv(fd, buffer, sizeof(buffer), MSG_DONTWAIT);
+//     // Ici, vous allez analyser recvData, exécuter les commandes et préparer les réponses
 
-	// Si on a reçu des données
-	if (bytes_read > 0)
-	{
-		std::vector<std::string>	msgs = splitString(buffer, "\r\n");
+//     // Exemple de pseudo-code pour le traitement
+//     // for (chaque commande dans recvData) {
+//     //     if (commande est valide) {
+//     //         std::string response = executeCommand(commande);
+//     //         client->appendToSendBuffer(response);
+//     //     }
+//     // }
 
-		for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); it++)
-		{
-			if (it->empty())
-				continue;
-
-			res.push_back(IRCmsg(getClientByFd(fd), *it));
-		}
-	}
-	// Si le client s'est déconnecté
-	else if (bytes_read == 0)
-	{
-		std::cout << "Client déconnecté." << std::endl;
-		close(fd);
-		fds[fd].fd = -1;  // Marquer comme libre
-	}
-	// Si on a une erreur
-	else if (errno != EWOULDBLOCK)		// CONDITION INTERDITE (À supprimer) (utiliser fcntl(fd, F_SETFL, O_NONBLOCK) à la place ?)
-		std::cerr << "Erreur de lecture du socket client." << std::endl;
-
-	return res;
-}
+//     client->clearRecvBuffer(); // Effacer le buffer de réception après le traitement
+// }
 
 void	Server::sendMsg(int fd, const std::string& msg)
 {

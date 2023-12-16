@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/16 04:06:52 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 20:10:08 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	Server::nick(const IRCmsg& msg)
 	{
 		std::cout << "Client " << msg.getClient()->getNickname() << " NOT authenticated" << std::endl;
 		sendMsg(msg.getClient()->getSocket().fd, err_passwdmismatch());
-		removeClient(msg.getClient());
+		msg.getClient()->setToDisconnect(true);
 		return 1;
 	}
 
@@ -77,7 +77,7 @@ int	Server::pass(const IRCmsg& msg)
 	{
 		std::cout << "Wrong password" << std::endl;
 		sendMsg(msg.getClient()->getSocket().fd, err_passwdmismatch());
-		removeClient(msg.getClient());
+		msg.getClient()->setToDisconnect(true);
 		return 1;
 	}
 
@@ -89,7 +89,7 @@ int	Server::pass(const IRCmsg& msg)
 int	Server::quit(const IRCmsg& msg)
 {
 	std::cout << "Client " << msg.getClient()->getNickname() << " quit (" << msg.getTrailing() << ")" << std::endl;
-	removeClient(msg.getClient());
+	msg.getClient()->setToDisconnect(true);
 
 	return 0;
 }
