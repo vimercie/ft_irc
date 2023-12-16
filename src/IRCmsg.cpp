@@ -20,7 +20,26 @@ IRCmsg::IRCmsg(Client* client, const std::string& message) : client(client)
 	fromString(message);
 }
 
+IRCmsg::IRCmsg(const IRCmsg& other)
+{
+	*this = other;
+}
+
 IRCmsg::~IRCmsg() {}
+
+IRCmsg& IRCmsg::operator=(const IRCmsg& other)
+{
+	if (this == &other)
+		return *this;
+
+	client = other.client;
+	prefix = other.prefix;
+	command = other.command;
+	parameters = other.parameters;
+	trailing = other.trailing;
+
+	return *this;
+}
 
 // getters
 Client* IRCmsg::getClient() const {return client;}

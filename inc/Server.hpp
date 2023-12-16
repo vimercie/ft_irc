@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/16 04:06:39 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 04:24:45 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ class Server
 		void					serverLoop();
 
 		void					communicate();
-		std::vector<IRCmsg*>	readMsg(int	fd);
+		std::vector<IRCmsg>		readMsg(int	fd);
 		void					sendMsg(int fd, const std::string& msg);
 
 	// utils

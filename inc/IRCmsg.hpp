@@ -33,7 +33,10 @@ class IRCmsg
 	public:
 		IRCmsg();
 		IRCmsg(Client* client, const std::string& message);
+		IRCmsg(const IRCmsg& other);
 		~IRCmsg();
+
+		IRCmsg& operator=(const IRCmsg& other);
 
 	// getters
 		Client*						getClient() const;

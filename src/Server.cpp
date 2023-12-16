@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/15 04:08:25 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 04:42:13 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,49 +208,37 @@ void	Server::removeClient(Client* client)
 
 void	Server::communicate()
 {
-	std::vector<IRCmsg*>	messages;
+	std::vector<IRCmsg>		messages;
+	std::vector<Client*>	clientsCopy = clients;
 
-	for (nfds_t i = 1; i < nfds; i++)
+	for (std::vector<Client*>::iterator clientIt = clientsCopy.begin(); clientIt != clientsCopy.end(); clientIt++)
 	{
-		// Si le socket est libre
-		if (fds[i].fd == -1)
-			continue;
-
-		// Si le socket a une erreur
-		if (fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
+		// Si le client est prêt à être lu
+		if ((*clientIt)->getSocket().revents & POLLIN)
 		{
-			close(fds[i].fd);
-			fds[i].fd = -1;
-			continue;
-		}
-
-		// Si le socket est prêt à être lu
-		if (fds[i].revents & POLLIN)
-		{
-			messages = readMsg(fds[i].fd);
+			messages = readMsg((*clientIt)->getSocket().fd);
 
 			// Lecture des messages entrants
-			for (std::vector<IRCmsg*>::iterator it = messages.begin(), end = messages.end(); it != end; it++)
+			for (std::vector<IRCmsg>::iterator it = messages.begin(), end = messages.end(); it != end; it++)
 			{
 				// Affichage du message reçu
-				std::cout << "<" + (*it)->getClient()->getNickname() + ">" + " : " + (*it)->toString();
+				std::cout << "<" + (*it).getClient()->getNickname() + ">" + " : " + (*it).toString();
 
 				// Exécution des commandes
-				if (exec(*(*it)) != 0)
+				if (exec(*it) != 0)
 					break;
 			}
-			for (std::vector<IRCmsg*>::iterator it = messages.begin(); it != messages.end(); it++)
-				delete *it;
+
 			messages.clear();
 		}
 	}
 }
 
-std::vector<IRCmsg*>	Server::readMsg(int fd)
+std::vector<IRCmsg>	Server::readMsg(int fd)
 {
 	char					buffer[1024];
 	ssize_t					bytes_read = 0;
-	std::vector<IRCmsg*>	res;
+	std::vector<IRCmsg>		res;
 
 	memset(buffer, 0, sizeof(buffer));
 
@@ -266,7 +254,7 @@ std::vector<IRCmsg*>	Server::readMsg(int fd)
 			if (it->empty())
 				continue;
 
-			res.push_back(new IRCmsg(getClientByFd(fd), *it));
+			res.push_back(IRCmsg(getClientByFd(fd), *it));
 		}
 	}
 	// Si le client s'est déconnecté
