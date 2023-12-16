@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/15 00:30:17 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 04:06:52 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ int Server::exec(const IRCmsg& msg)
 
 	cmds["JOIN"] 	= &Server::join;
 	cmds["PRIVMSG"]	= &Server::privmsg;
+
+	cmds["PING"] = &Server::ping;
 
     std::map<std::string, cmd>::iterator it = cmds.find(msg.getCommand());
 
@@ -156,8 +158,18 @@ int	Server::welcome(Client* client)
 // channel related commands
 
 // server related commands
-// void	Command::join(const IRCmsg& msg, Server *server)
-// {
-	
-// }
+int	Server::ping(const IRCmsg& msg)
+{
+	IRCmsg	response;
+
+	response.setPrefix("localhost");
+	response.setCommand("PONG");
+	response.setParameters(msg.getParameters());
+	response.setTrailing(msg.getTrailing());
+	response.setClient(msg.getClient());
+
+	sendMsg(msg.getClient()->getSocket().fd, response.toString());
+
+	return 0;
+}
 
