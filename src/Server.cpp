@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/16 20:36:10 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 21:16:03 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,27 +120,6 @@ void	Server::initializePoll()
 	nfds = 1;
 }
 
-void	Server::serverLoop()
-{
-	int	poll_ret;
-
-	while (status)
-	{
-		poll_ret = poll(fds, nfds, 0);
-
-		if (poll_ret < 0 && status == 1)
-		{
-			std::cerr << "Erreur de poll" << std::endl;
-			break;
-		}
-
-		if (fds[0].revents & POLLIN)
-			acceptConnections();
-
-		communicate();
-	}
-}
-
 void	Server::acceptConnections()
 {
 	struct sockaddr_in	cli;
@@ -190,72 +169,80 @@ void	Server::closeConnection(int fd)
 
 void Server::removeClient(Client* client)
 {
-    // Fermeture de la connexion
-    closeConnection(client->getSocket().fd);
+	// Fermeture de la connexion
+	closeConnection(client->getSocket().fd);
 
-    // Suppression du client des canaux
-    std::vector<Channel*> channelsCopy = client->getChannels();
-    for (std::vector<Channel*>::iterator it = channelsCopy.begin(); it != channelsCopy.end(); it++)
-        (*it)->removeClient(client);
+	// Suppression du client des canaux
+	std::vector<Channel*> channelsCopy = client->getChannels();
+	for (std::vector<Channel*>::iterator it = channelsCopy.begin(); it != channelsCopy.end(); it++)
+		(*it)->removeClient(client);
 
-    // Suppression du client de la liste des clients
-    clients.erase(std::remove(clients.begin(), clients.end(), client), clients.end());
-    delete client;
+	// Suppression du client de la liste des clients
+	clients.erase(std::remove(clients.begin(), clients.end(), client), clients.end());
+	delete client;
 }
 
-void Server::communicate()
+void Server::serverLoop()
 {
-    std::vector<Client*> toRemove;
+    int 					poll_ret;
+    std::vector<Client*>	toRemove;
 
-    for (std::vector<Client*>::iterator clientIt = clients.begin(); clientIt != clients.end(); ++clientIt)
-    {
-        Client* client = *clientIt;
+    while (status)
+	{
+        poll_ret = poll(fds, nfds, 0);
 
-        client->clearRecvBuffer();
-
-        // Si le client est prêt à être lu
-        if (client->getSocket().revents & POLLIN)
-        {
-            if (client->readFromSocket() != 0)
-            {
-                toRemove.push_back(client);
-                continue;
-            }
-
-            for (std::vector<std::string>::const_iterator it = client->getRecvBuffer().begin(); it != client->getRecvBuffer().end(); ++it)
-			{
-                std::cout << "<" + client->getNickname() + ">" + " : " + *it << std::endl;
-
-                IRCmsg msg(client, *it);
-
-                if (exec(msg) != 0)
-                    break;
-            }
+        if (poll_ret < 0 && status == 1)
+		{
+            std::cerr << "Erreur de poll" << std::endl;
+            break;
         }
-    }
 
-    // Supprimer les clients après le traitement pour éviter les erreurs d'accès invalide
-    for (std::vector<Client*>::iterator it = toRemove.begin(); it != toRemove.end(); ++it)
-        removeClient(*it);
+        if (fds[0].revents & POLLIN)
+            acceptConnections();
+
+		toRemove.clear();
+
+        for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+		{
+            if (!(*it)) continue; // Vérifie si le client n'est pas nul
+            
+            if ((*it)->getSocket().revents & POLLIN)
+                (*it)->readFromSocket();
+
+            processCommands(*it);
+
+			// if ((*it)->getSocket().revents & POLLOUT)
+            // 	(*it)->sendToSocket();
+
+            if ((*it)->isToDisconnect())
+                toRemove.push_back(*it);
+        }
+
+        // Supprime les clients marqués pour suppression
+        for (std::vector<Client*>::iterator it = toRemove.begin(); it != toRemove.end(); ++it)
+            removeClient(*it);
+    }
 }
 
+void	Server::processCommands(Client *client)
+{
+    std::vector<std::string>	recvData = client->getRecvBuffer();
 
-// void	Server::processCommands(Client* client)
-// {
-//     const std::string& recvData = client->getRecvBuffer();
+	if (recvData.empty())
+		return;
 
-//     // Ici, vous allez analyser recvData, exécuter les commandes et préparer les réponses
+	for (std::vector<std::string>::iterator it = recvData.begin(); it != recvData.end(); ++it)
+	{
+		std::cout << "<" + client->getNickname() + ">" + " : " + *it << std::endl;
 
-//     // Exemple de pseudo-code pour le traitement
-//     // for (chaque commande dans recvData) {
-//     //     if (commande est valide) {
-//     //         std::string response = executeCommand(commande);
-//     //         client->appendToSendBuffer(response);
-//     //     }
-//     // }
+		IRCmsg msg(client, *it);
 
-//     client->clearRecvBuffer(); // Effacer le buffer de réception après le traitement
-// }
+		if (exec(msg) != 0)
+			break;
+	}
+
+    client->clearRecvBuffer(); // Effacer le buffer de réception après le traitement
+}
 
 void	Server::sendMsg(int fd, const std::string& msg)
 {

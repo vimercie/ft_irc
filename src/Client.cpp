@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/16 20:34:21 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 21:13:35 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ int	Client::readFromSocket()
 	int		bytes_read;
 
 	memset(buffer, 0, BUFFER_SIZE + 1);
+	recvBuffer.clear();
 
 	bytes_read = recv(socket->fd, buffer, BUFFER_SIZE, MSG_DONTWAIT);
 
@@ -81,11 +82,7 @@ void	Client::appendToSendBuffer(const std::string& msg) {sendBuffer.push_back(ms
 void	Client::clearRecvBuffer() {recvBuffer.clear();}
 void	Client::clearSendBuffer() {sendBuffer.clear();}
 
-void	Client::addChannel(Channel* channel)
-{
-	channels.push_back(channel);
-}
-
+void	Client::addChannel(Channel* channel) {channels.push_back(channel);}
 void	Client::removeChannel(Channel* channel)
 {
 	std::vector<Channel*>::iterator it = std::find(channels.begin(), channels.end(), channel);
