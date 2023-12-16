@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/12 15:41:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/13 15:50:19 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 23:20:36 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,20 @@ std::string	Server::err_unknowncommand(const IRCmsg& msg)
 	response.setParameters(params);
 
 	response.setTrailing("Unknown command");
+
+	std::cout << "Sending: " << response.toString() << std::endl;
+
+	return (response.toString());
+}
+
+std::string	Server::err_notregistered()
+{
+	IRCmsg	response;
+
+	response.setCommand("451");
+	response.setPrefix("localhost");
+	response.setParameters(std::vector<std::string>(1, "*"));
+	response.setTrailing("You have not registered");
 
 	std::cout << "Sending: " << response.toString() << std::endl;
 

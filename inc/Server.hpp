@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/16 21:03:09 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 23:55:52 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ class Server
 		void	processCommands(Client* client);
 
 	// cmds
-
 		int	exec(const IRCmsg& msg);
 
 		int	nick(const IRCmsg& msg);
@@ -82,11 +81,15 @@ class Server
 
 		int	ping(const IRCmsg& msg);
 
+		// utils
+		int	privmsgToChannel(const IRCmsg& msg, Channel* channel, Client* sender);
+		int	privmsgToClient(const IRCmsg& msg, Client* receiver, Client* sender);
 		int	welcome(Client* client);
 
 	// errors
 		std::string	err_passwdmismatch();
 		std::string	err_unknowncommand(const IRCmsg& msg);
+		std::string	err_notregistered();
 
 	public:
 		Server(int port, const std::string& password);

@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/16 20:10:08 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 00:09:40 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,17 +47,19 @@ int Server::exec(const IRCmsg& msg)
 // user related commands
 int	Server::nick(const IRCmsg& msg)
 {
-	if (!msg.getClient()->isAuthenticated())
+	Client	*client = msg.getClient();
+
+	if (!client->isAuthenticated())
 	{
-		std::cout << "Client " << msg.getClient()->getNickname() << " NOT authenticated" << std::endl;
-		sendMsg(msg.getClient()->getSocket().fd, err_passwdmismatch());
-		msg.getClient()->setToDisconnect(true);
+		std::cout << "Client " << client->getNickname() << " NOT authenticated" << std::endl;
+		client->appendToSendBuffer(err_notregistered());
+		client->setToDisconnect(true);
 		return 1;
 	}
 
-	msg.getClient()->setNickname(msg.getParameters()[0]);
+	client->setNickname(msg.getParameters()[0]);
 
-	welcome(msg.getClient());
+	welcome(client);
 
 	return 0;
 }
@@ -73,23 +75,27 @@ int	Server::user(const IRCmsg& msg)
 
 int	Server::pass(const IRCmsg& msg)
 {
+	Client	*client = msg.getClient();
+
 	if (msg.getParameters()[0] != this->password)
 	{
 		std::cout << "Wrong password" << std::endl;
-		sendMsg(msg.getClient()->getSocket().fd, err_passwdmismatch());
-		msg.getClient()->setToDisconnect(true);
+		client->appendToSendBuffer(err_passwdmismatch());
+		client->setToDisconnect(true);
 		return 1;
 	}
 
-	msg.getClient()->setPass(true);
+	client->setPass(true);
 
 	return 0;
 }
 
 int	Server::quit(const IRCmsg& msg)
 {
-	std::cout << "Client " << msg.getClient()->getNickname() << " quit (" << msg.getTrailing() << ")" << std::endl;
-	msg.getClient()->setToDisconnect(true);
+	Client	*client = msg.getClient();
+
+	std::cout << "Client " << client->getNickname() << " quit (" << msg.getTrailing() << ")" << std::endl;
+	client->setToDisconnect(true);
 
 	return 0;
 }
@@ -110,36 +116,70 @@ int	Server::join(const IRCmsg& msg)
 	return 0;
 }
 
-
-int	Server::privmsg(const IRCmsg& msg)
+int Server::privmsg(const IRCmsg& msg)
 {
-	IRCmsg						response;
-	Channel*					channel;
+    Client *sender = msg.getClient();
 
-	channel = getChannelByName(msg.getParameters()[0]);
-	if (channel == NULL)
+    if (!sender)
+		return 0;
+
+    if (msg.getParameters()[0][0] == '#')	// Si le premier paramètre commence par un #, c'est un canal
 	{
-		std::cout << "Channel " << msg.getParameters()[0] << " not found" << std::endl;
-		return 1;
-	}
-	else
+        Channel* channel = getChannelByName(msg.getParameters()[0]);
+
+        if (!channel)
+			return 0;
+
+        return privmsgToChannel(msg, channel, sender);
+    }
+	else	// Sinon, c'est un client
 	{
-		response.setPrefix(msg.getClient()->getNickname());
-		response.setCommand(msg.getCommand());
-		response.setParameters(msg.getParameters());
-		response.setTrailing(msg.getTrailing());
-		response.setClient(msg.getClient());
-		std::cout << response.toString();
-		std::vector<Client*> clients = channel->getClients();
-		for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
-		{
-			if ((*it)->getSocket().fd != msg.getClient()->getSocket().fd)
-		    	sendMsg((*it)->getSocket().fd, response.toString());
-		}
-	}
-	return 0;
+        Client* recipient = getClientByNickname(msg.getParameters()[0]);
+
+        if (!recipient || recipient == sender)
+			return 0;
+
+        return privmsgToClient(msg, recipient, sender);
+    }
 }
 
+int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel, Client* sender)
+{
+    const std::vector<Client*>& clients = channel->getClients();
+
+    for (std::vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++)
+	{
+        Client* recipient = *it;
+
+        if (!recipient || recipient == sender)
+			continue;
+
+        IRCmsg response;
+        response.setPrefix(sender->getNickname());
+        response.setCommand("PRIVMSG");
+        response.setParameters(std::vector<std::string>(1, channel->getName()));
+        response.setTrailing(msg.getTrailing());
+        response.setClient(recipient);
+
+        recipient->appendToSendBuffer(response.toString());
+    }
+
+    return 0;
+}
+
+int Server::privmsgToClient(const IRCmsg& msg, Client* recipient, Client* sender)
+{
+    IRCmsg response;
+    response.setPrefix(sender->getNickname());
+    response.setCommand("PRIVMSG");
+    response.setParameters(std::vector<std::string>(1, recipient->getNickname()));
+    response.setTrailing(msg.getTrailing());
+    response.setClient(recipient);
+
+    recipient->appendToSendBuffer(response.toString());
+
+    return 0;
+}
 
 int	Server::welcome(Client* client)
 {
@@ -150,7 +190,7 @@ int	Server::welcome(Client* client)
 	msg.setParameters(std::vector<std::string>(1, client->getNickname()));
 	msg.setTrailing("Wesh wesh wesh " + client->getNickname());
 
-	sendMsg(client->getSocket().fd, msg.toString());
+	client->appendToSendBuffer(msg.toString());
 
 	return 0;
 }

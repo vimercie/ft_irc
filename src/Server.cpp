@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/16 21:16:03 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/16 23:18:56 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ void	Server::acceptConnections()
 	}
 
 	fds[sockIndex].fd = connfd;
-	fds[sockIndex].events = POLLIN;
+	fds[sockIndex].events = POLLIN | POLLOUT;
 	fds[sockIndex].revents = 0;
 
 	clients.push_back(new Client(&fds[sockIndex]));
@@ -211,8 +211,8 @@ void Server::serverLoop()
 
             processCommands(*it);
 
-			// if ((*it)->getSocket().revents & POLLOUT)
-            // 	(*it)->sendToSocket();
+			if ((*it)->getSocket().revents & POLLOUT)
+            	(*it)->sendToSocket();
 
             if ((*it)->isToDisconnect())
                 toRemove.push_back(*it);

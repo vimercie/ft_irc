@@ -53,8 +53,9 @@ std::string IRCmsg::getTrailing() const {return trailing;}
 void IRCmsg::setPrefix(const std::string& prefix)
 {
 	if (prefix[0] == ':')
-		
-	this->prefix = prefix;
+		this->prefix = prefix.substr(1);
+	else
+		this->prefix = prefix;
 }
 void IRCmsg::setCommand(const std::string& command) {this->command = command;}
 void IRCmsg::setParameters(const std::vector<std::string>& parameters) {this->parameters = parameters;}
