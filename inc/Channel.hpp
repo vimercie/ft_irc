@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 14:00:28 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 14:16:31 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,11 @@ class Channel
 
 		void					addClient(Client* client);
 		void					removeClient(Client* client);
-		
+
 		void					addOperator(Client* client);
 		void					removeOperator(Client* client);
+
+		void					sendToChannel(const IRCmsg& msg);
 };
 
 #endif

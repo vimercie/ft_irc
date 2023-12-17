@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 14:01:10 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 14:25:53 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ int Server::privmsg(const IRCmsg& msg)
         if (!channel)
 			return 0;
 
-        return privmsgToChannel(msg, channel, sender);
+        return privmsgToChannel(msg, channel);
     }
 	else	// Sinon, c'est un client
 	{
@@ -140,38 +140,23 @@ int Server::privmsg(const IRCmsg& msg)
         if (!recipient || recipient == sender)
 			return 0;
 
-        return privmsgToClient(msg, recipient, sender);
+        return privmsgToClient(msg, recipient);
     }
 }
 
 
 
-int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel, Client* sender)
+int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel)
 {
-    const std::vector<Client*>& clients = channel->getClients();
-
-    for (std::vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++)
-	{
-        Client* recipient = *it;
-
-        if (!recipient || recipient == sender)
-			continue;
-
-        IRCmsg response;
-        response.setPrefix(sender->getNickname());
-        response.setCommand("PRIVMSG");
-        response.setParameters(std::vector<std::string>(1, channel->getName()));
-        response.setTrailing(msg.getTrailing());
-        response.setClient(recipient);
-
-        recipient->appendToSendBuffer(response.toString());
-    }
+    channel->sendToChannel(msg);
 
     return 0;
 }
 
-int Server::privmsgToClient(const IRCmsg& msg, Client* recipient, Client* sender)
+int Server::privmsgToClient(const IRCmsg& msg, Client* recipient)
 {
+	const Client* sender = msg.getClient();
+
     IRCmsg response;
     response.setPrefix(sender->getNickname());
     response.setCommand("PRIVMSG");

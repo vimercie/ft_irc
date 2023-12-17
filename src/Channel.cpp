@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 14:00:35 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 14:25:07 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,9 @@ std::string	Channel::getNamesList(void)
 	return result;
 }
 
+void	Channel::setTopic(const std::string& topic) {this->topic = topic;}
+void	Channel::setKey(const std::string& key) {this->key = key;}
+void	Channel::setMode(char mode, bool value) {modes[mode] = value;}
 
 void	Channel::addClient(Client* client)
 {
@@ -82,6 +85,25 @@ void	Channel::removeOperator(Client* client)
 	}
 }
 
-void	Channel::setTopic(const std::string& topic) {this->topic = topic;}
-void	Channel::setKey(const std::string& key) {this->key = key;}
-void	Channel::setMode(char mode, bool value) {modes[mode] = value;}
+void	Channel::sendToChannel(const IRCmsg& msg)
+{
+	const std::vector<Client*>& clients = getClients();
+	const Client*				sender = msg.getClient();
+
+    for (std::vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++)
+	{
+        Client* client = *it;
+
+        if (!client || client == sender)
+			continue;
+
+        IRCmsg response;
+        response.setPrefix(sender->getNickname());
+        response.setCommand("PRIVMSG");
+        response.setParameters(std::vector<std::string>(1, getName()));
+        response.setTrailing(msg.getTrailing());
+        response.setClient(client);
+
+        client->appendToSendBuffer(response.toString());
+    }
+}

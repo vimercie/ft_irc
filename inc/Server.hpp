@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 13:53:15 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 14:22:29 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,8 @@ class Server
 		int	topic(const IRCmsg& msg);
 
 		// utils
-		int	privmsgToChannel(const IRCmsg& msg, Channel* channel, Client* sender);
-		int	privmsgToClient(const IRCmsg& msg, Client* receiver, Client* sender);
+		int	privmsgToChannel(const IRCmsg& msg, Channel* channel);
+		int	privmsgToClient(const IRCmsg& msg, Client* receiver);
 		int	welcome(Client* client);
 
 	// errors
