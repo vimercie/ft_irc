@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 17:17:17 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 17:27:35 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,22 +154,18 @@ int	Server::topic(const IRCmsg& msg)
 {
 	Channel*	channel = getChannelByName(msg.getParameters()[0]);
 	IRCmsg		response;
+
 	if (channel == NULL)
 		return 0;
 
-	channel->setTopic(msg.getTrailing());
 
-	if (msg.getTrailing().empty())
-	{
-		response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), ":" + channel->getTopic());
-		msg.getClient()->appendToSendBuffer(response.toString());
-	}
-	else
-	{
-		response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), msg.getTrailing());
-	
+	if (!msg.getTrailing().empty())
+		channel->setTopic(msg.getTrailing());
+
+	response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), channel->getTopic());
+
 	channel->sendToChannel(response.toString());
-	msg.getClient()->appendToSendBuffer(response.toString());
+
 	return 0;
 }
 
