@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 14:59:05 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 15:36:49 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "../inc/Channel.hpp"
 #include "../inc/Server.hpp"
 #include "../inc/Utils.hpp"
+#include "../inc/RPL.hpp"
 
 int Server::exec(const IRCmsg& msg)
 {
