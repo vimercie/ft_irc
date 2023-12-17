@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 14:25:53 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 14:52:00 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,12 +187,38 @@ int	Server::welcome(Client* client)
 
 int	Server::topic(const IRCmsg& msg)
 {
+	IRCmsg	response;
 	Channel*	channel = getChannelByName(msg.getParameters()[0]);
 
 	if (channel == NULL)
 		return 0;
-
 	channel->setTopic(msg.getTrailing());
+	response.setPrefix("localhost");
+	response.setCommand("TOPIC");
+	response.setParameters(msg.getParameters());
+	response.setTrailing(msg.getTrailing());
+	response.setClient(msg.getClient());
+	// send response to all clients in channel
+	channel->sendToChannel(response);
+
+	return 0;
+}
+
+int	Server::mode(const IRCmsg& msg)
+{
+	IRCmsg	response;
+	Channel*	channel = getChannelByName(msg.getParameters()[0]);
+
+	if (channel == NULL)
+		return 0;
+	channel->setMode(msg.getTrailing()[0], true);
+	response.setPrefix("localhost");
+	response.setCommand("MODE");
+	response.setParameters(msg.getParameters());
+	response.setTrailing(msg.getTrailing());
+	response.setClient(msg.getClient());
+	// send response to all clients in channel
+	channel->sendToChannel(response);
 
 	return 0;
 }

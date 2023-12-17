@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 14:22:29 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 14:48:18 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # include <errno.h>
 # include <vector>
 # include <signal.h>
+# include <../inc/RPL.hpp>
 
 class Channel;
 class Client;
@@ -80,6 +81,7 @@ class Server
 		int	privmsg(const IRCmsg& msg);
 		int	ping(const IRCmsg& msg);
 		int	topic(const IRCmsg& msg);
+		int mode(const IRCmsg& msg);
 
 		// utils
 		int	privmsgToChannel(const IRCmsg& msg, Channel* channel);
