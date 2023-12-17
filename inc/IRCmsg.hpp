@@ -33,6 +33,7 @@ class IRCmsg
 	public:
 		IRCmsg();
 		IRCmsg(Client* client, const std::string& message);
+		IRCmsg(Client* client, const std::string& prefix, const std::string& command, const std::vector<std::string>& parameters, const std::string& trailing);
 		IRCmsg(const IRCmsg& other);
 		~IRCmsg();
 

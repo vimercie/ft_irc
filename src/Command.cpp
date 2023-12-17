@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 15:03:32 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 15:29:46 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "../inc/Channel.hpp"
 #include "../inc/Server.hpp"
 #include "../inc/Utils.hpp"
+#include "../inc/RPL.hpp"
 
 int Server::exec(const IRCmsg& msg)
 {
@@ -148,20 +149,15 @@ int Server::privmsg(const IRCmsg& msg)
 
 int	Server::topic(const IRCmsg& msg)
 {
-	IRCmsg		response;
 	Channel*	channel		= getChannelByName(msg.getParameters()[0]);
 	std::string	topicmsg	= RPL_TOPIC(channel->getName(), msg.getTrailing());
 
 	if (channel == NULL)
 		return 0;
-	channel->setTopic(msg.getTrailing());
-	response.setPrefix("localhost");
-	response.setCommand("TOPIC");
-	response.setParameters(msg.getParameters());
-	response.setTrailing(topicmsg);
-	response.setClient(msg.getClient());
 
-	channel->sendToChannel(response);
+	channel->setTopic(msg.getTrailing());
+	channel->sendToChannel(IRCmsg(msg.getClient(), "localhost", "TOPIC", msg.getParameters(), topicmsg));
+
 	return 0;
 }
 
@@ -221,7 +217,9 @@ int	Server::welcome(Client* client)
 
 int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel)
 {
-    channel->sendToChannel(msg);
+	Client* sender = msg.getClient();
+
+    channel->sendToChannel(IRCmsg(sender, sender->getNickname(), "PRIVMSG", msg.getParameters(), msg.getTrailing()));
 
     return 0;
 }

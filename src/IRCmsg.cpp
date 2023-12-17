@@ -20,6 +20,22 @@ IRCmsg::IRCmsg(Client* client, const std::string& message) : client(client)
 	fromString(message);
 }
 
+IRCmsg::IRCmsg(Client* client, const std::string& prefix, const std::string& command, const std::vector<std::string>& parameters, const std::string& trailing)
+{
+	this->client = client;
+
+	if (!prefix.empty())
+		this->prefix = prefix;
+
+	this->command = command;
+
+	if (!parameters.empty())
+	this->parameters = parameters;
+
+	if (!trailing.empty())
+		this->trailing = trailing;
+}
+
 IRCmsg::IRCmsg(const IRCmsg& other)
 {
 	*this = other;
