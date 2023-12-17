@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 14:52:00 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 15:01:22 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,8 @@ int	Server::quit(const IRCmsg& msg)
 	return 0;
 }
 
+// channel related commands
+
 int	Server::join(const IRCmsg& msg)
 {
 	Channel*					channel;
@@ -144,47 +146,6 @@ int Server::privmsg(const IRCmsg& msg)
     }
 }
 
-
-
-int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel)
-{
-    channel->sendToChannel(msg);
-
-    return 0;
-}
-
-int Server::privmsgToClient(const IRCmsg& msg, Client* recipient)
-{
-	const Client* sender = msg.getClient();
-
-    IRCmsg response;
-    response.setPrefix(sender->getNickname());
-    response.setCommand("PRIVMSG");
-    response.setParameters(std::vector<std::string>(1, recipient->getNickname()));
-    response.setTrailing(msg.getTrailing());
-    response.setClient(recipient);
-
-    recipient->appendToSendBuffer(response.toString());
-
-    return 0;
-}
-
-int	Server::welcome(Client* client)
-{
-	IRCmsg	msg;
-
-	msg.setCommand("001");
-	msg.setPrefix("localhost");
-	msg.setParameters(std::vector<std::string>(1, client->getNickname()));
-	msg.setTrailing("Wesh wesh wesh " + client->getNickname());
-
-	client->appendToSendBuffer(msg.toString());
-
-	return 0;
-}
-
-// channel related commands
-
 int	Server::topic(const IRCmsg& msg)
 {
 	IRCmsg	response;
@@ -211,13 +172,15 @@ int	Server::mode(const IRCmsg& msg)
 
 	if (channel == NULL)
 		return 0;
+
 	channel->setMode(msg.getTrailing()[0], true);
+
 	response.setPrefix("localhost");
 	response.setCommand("MODE");
 	response.setParameters(msg.getParameters());
 	response.setTrailing(msg.getTrailing());
 	response.setClient(msg.getClient());
-	// send response to all clients in channel
+
 	channel->sendToChannel(response);
 
 	return 0;
@@ -239,3 +202,42 @@ int	Server::ping(const IRCmsg& msg)
 	return 0;
 }
 
+
+// utils
+
+int	Server::welcome(Client* client)
+{
+	IRCmsg	msg;
+
+	msg.setCommand("001");
+	msg.setPrefix("localhost");
+	msg.setParameters(std::vector<std::string>(1, client->getNickname()));
+	msg.setTrailing("Wesh wesh wesh " + client->getNickname());
+
+	client->appendToSendBuffer(msg.toString());
+
+	return 0;
+}
+
+int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel)
+{
+    channel->sendToChannel(msg);
+
+    return 0;
+}
+
+int Server::privmsgToClient(const IRCmsg& msg, Client* recipient)
+{
+	const Client* sender = msg.getClient();
+
+    IRCmsg response;
+    response.setPrefix(sender->getNickname());
+    response.setCommand("PRIVMSG");
+    response.setParameters(std::vector<std::string>(1, recipient->getNickname()));
+    response.setTrailing(msg.getTrailing());
+    response.setClient(recipient);
+
+    recipient->appendToSendBuffer(response.toString());
+
+    return 0;
+}

@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 14:48:18 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 14:58:04 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,16 +72,21 @@ class Server
 	// cmds
 		int	exec(const IRCmsg& msg);
 
+		// user related commands
 		int	nick(const IRCmsg& msg);
 		int	user(const IRCmsg& msg);
 		int	pass(const IRCmsg& msg);
 		int	quit(const IRCmsg& msg);
 
+		// channel related commands
 		int	join(const IRCmsg& msg);
 		int	privmsg(const IRCmsg& msg);
-		int	ping(const IRCmsg& msg);
 		int	topic(const IRCmsg& msg);
 		int mode(const IRCmsg& msg);
+		int part(const IRCmsg& msg);
+
+		// server related commands
+		int	ping(const IRCmsg& msg);
 
 		// utils
 		int	privmsgToChannel(const IRCmsg& msg, Channel* channel);
