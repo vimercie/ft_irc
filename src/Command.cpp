@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 17:13:36 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 17:17:17 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,7 @@ int	Server::topic(const IRCmsg& msg)
 		msg.getClient()->appendToSendBuffer(response.toString());
 	}
 	else
+	{
 		response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), msg.getTrailing());
 	
 	channel->sendToChannel(response.toString());
