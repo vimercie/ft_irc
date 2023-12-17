@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 16:59:35 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 17:09:13 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,9 +164,11 @@ int	Server::topic(const IRCmsg& msg)
 		msg.getClient()->appendToSendBuffer(response.toString());
 	}
 	else
+	{
 		response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), msg.getTrailing());
+		msg.getClient()->appendToSendBuffer(response.toString());
+	}
 	channel->sendToChannel(response);
-	msg.getClient()->appendToSendBuffer(response.toString());
 	return 0;
 }
 
