@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 15:01:22 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 15:03:32 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,8 +148,9 @@ int Server::privmsg(const IRCmsg& msg)
 
 int	Server::topic(const IRCmsg& msg)
 {
-	IRCmsg	response;
-	Channel*	channel = getChannelByName(msg.getParameters()[0]);
+	IRCmsg		response;
+	Channel*	channel		= getChannelByName(msg.getParameters()[0]);
+	std::string	topicmsg	= RPL_TOPIC(channel->getName(), msg.getTrailing());
 
 	if (channel == NULL)
 		return 0;
@@ -157,11 +158,10 @@ int	Server::topic(const IRCmsg& msg)
 	response.setPrefix("localhost");
 	response.setCommand("TOPIC");
 	response.setParameters(msg.getParameters());
-	response.setTrailing(msg.getTrailing());
+	response.setTrailing(topicmsg);
 	response.setClient(msg.getClient());
-	// send response to all clients in channel
-	channel->sendToChannel(response);
 
+	channel->sendToChannel(response);
 	return 0;
 }
 
