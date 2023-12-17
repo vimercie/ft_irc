@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/12 15:32:54 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 14:00:28 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,12 @@ class Channel
 
 		std::string 				name;
 		std::vector<Client*>		clients;
-		std::map<std::string, cmd>	cmds;
+		std::vector<Client*>		operators;
+		std::map<std::string, cmd>	cmds;  
+		std::map<char , bool>		modes; // i, t, k, o, l 
+		std::string					key; // password
+		std::string					topic;
+
 	public:
 		Channel(std::string name);
 		~Channel();
@@ -44,9 +49,20 @@ class Channel
 		std::string				getName(void) const;
 		std::string				getNamesList(void);
 		std::vector<Client*>	getClients(void) const;
+		std::vector<Client*>	getOperators(void) const;
+		std::string				getTopic(void) const;
+		std::string				getKey(void) const;
+		bool					getMode(char mode) const;
+
+		void					setTopic(const std::string& topic);
+		void					setKey(const std::string& key);
+		void					setMode(char mode, bool value);
 
 		void					addClient(Client* client);
 		void					removeClient(Client* client);
+		
+		void					addOperator(Client* client);
+		void					removeOperator(Client* client);
 };
 
 #endif

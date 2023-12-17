@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 00:09:40 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 14:01:10 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ int	Server::join(const IRCmsg& msg)
 	{
 		channel = new Channel(msg.getParameters()[0]);
 		channels.push_back(channel);
+		channel->addOperator(msg.getClient());
 	}
 
 	channel->addClient(msg.getClient());
@@ -142,6 +143,8 @@ int Server::privmsg(const IRCmsg& msg)
         return privmsgToClient(msg, recipient, sender);
     }
 }
+
+
 
 int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel, Client* sender)
 {
@@ -196,6 +199,18 @@ int	Server::welcome(Client* client)
 }
 
 // channel related commands
+
+int	Server::topic(const IRCmsg& msg)
+{
+	Channel*	channel = getChannelByName(msg.getParameters()[0]);
+
+	if (channel == NULL)
+		return 0;
+
+	channel->setTopic(msg.getTrailing());
+
+	return 0;
+}
 
 // server related commands
 int	Server::ping(const IRCmsg& msg)

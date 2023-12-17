@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/15 00:16:45 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 14:00:35 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,14 @@ Channel::Channel(std::string name) : name(name)
 
 	if (name[0] != '#')
 		this->name = "#" + this->name;
-
+	
 	std::cout << "Channel " + this->name + " created" << std::endl;
+	//set modes
+	modes['i'] = false;
+	modes['t'] = true;
+	modes['k'] = false;
+	modes['o'] = false;
+	modes['l'] = false;
 }
 
 Channel::~Channel() {std::cout << "Channel " + name + " destroyed" << std::endl;}
@@ -59,3 +65,23 @@ void	Channel::removeClient(Client* client)
 		clients.erase(it);
 	}
 }
+
+void	Channel::addOperator(Client* client)
+{
+	operators.push_back(client);
+}
+
+void	Channel::removeOperator(Client* client)
+{
+	std::vector<Client*>::iterator it = std::find(operators.begin(), operators.end(), client);
+
+	if (it != operators.end())
+	{
+		std::cout << "Client " << client->getNickname() << " removed from operators of channel " << name << std::endl;
+		operators.erase(it);
+	}
+}
+
+void	Channel::setTopic(const std::string& topic) {this->topic = topic;}
+void	Channel::setKey(const std::string& key) {this->key = key;}
+void	Channel::setMode(char mode, bool value) {modes[mode] = value;}
