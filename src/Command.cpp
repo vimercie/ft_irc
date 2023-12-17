@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 16:00:38 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 16:20:08 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	Server::nick(const IRCmsg& msg)
 
 	client->setNickname(msg.getParameters()[0]);
 
-	welcome(client);
+	client->appendToSendBuffer(RPL_WELCOME(client->getNickname()));
 
 	return 0;
 }
@@ -196,36 +196,15 @@ int	Server::part(const IRCmsg& msg)
 // server related commands
 int	Server::ping(const IRCmsg& msg)
 {
-	IRCmsg	response;
+	Client*	client = msg.getClient();
 
-	response.setPrefix("localhost");
-	response.setCommand("PONG");
-	response.setParameters(msg.getParameters());
-	response.setTrailing(msg.getTrailing());
-	response.setClient(msg.getClient());
-
-	sendMsg(msg.getClient()->getSocket().fd, response.toString());
+	client->appendToSendBuffer(IRCmsg(client, "localhost", "PONG", msg.getParameters(), msg.getTrailing()).toString());
 
 	return 0;
 }
 
 
 // utils
-
-int	Server::welcome(Client* client)
-{
-	IRCmsg	msg;
-
-	msg.setCommand("001");
-	msg.setPrefix("localhost");
-	msg.setParameters(std::vector<std::string>(1, client->getNickname()));
-	msg.setTrailing("Wesh wesh wesh " + client->getNickname());
-
-	client->appendToSendBuffer(msg.toString());
-
-	return 0;
-}
-
 int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel)
 {
 	Client* sender = msg.getClient();
@@ -240,11 +219,11 @@ int Server::privmsgToClient(const IRCmsg& msg, Client* recipient)
 	const Client* sender = msg.getClient();
 
     IRCmsg response;
-    response.setPrefix(sender->getNickname());
+    response.setClient(recipient);
+    response.setPrefix(user_id(sender->getNickname(), sender->getUsername()));
     response.setCommand("PRIVMSG");
     response.setParameters(std::vector<std::string>(1, recipient->getNickname()));
     response.setTrailing(msg.getTrailing());
-    response.setClient(recipient);
 
     recipient->appendToSendBuffer(response.toString());
 

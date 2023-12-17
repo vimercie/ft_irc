@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 16:06:25 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 16:10:19 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void	Channel::removeClient(Client* client)
 	{
 		std::cout << "Client " << client->getNickname() << " removed from channel " << name << std::endl;
 		clients.erase(it);
+		client->removeChannel(this);
 	}
 }
 

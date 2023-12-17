@@ -6,11 +6,12 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/16 23:33:33 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 16:11:33 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Client.hpp"
+#include "../inc/Channel.hpp"
 #include "../inc/IRCmsg.hpp"
 #include "../inc/Utils.hpp"
 
@@ -101,5 +102,8 @@ void	Client::removeChannel(Channel* channel)
 	std::vector<Channel*>::iterator it = std::find(channels.begin(), channels.end(), channel);
 
 	if (it != channels.end())
+	{
 		channels.erase(it);
+		channel->removeClient(this);
+	}
 }

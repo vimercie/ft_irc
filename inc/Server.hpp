@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 15:39:29 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 16:20:33 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ class Server
 		// utils
 		int	privmsgToChannel(const IRCmsg& msg, Channel* channel);
 		int	privmsgToClient(const IRCmsg& msg, Client* receiver);
-		int	welcome(Client* client);
 
 	// errors
 		std::string	err_passwdmismatch();
