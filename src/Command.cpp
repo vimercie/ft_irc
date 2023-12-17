@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 16:20:08 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 16:59:35 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,15 +152,21 @@ int Server::privmsg(const IRCmsg& msg)
 
 int	Server::topic(const IRCmsg& msg)
 {
-	Channel*	channel		= getChannelByName(msg.getParameters()[0]);
-	std::string	topicmsg	= RPL_TOPIC(channel->getName(), msg.getTrailing());
-
+	Channel*	channel = getChannelByName(msg.getParameters()[0]);
+	IRCmsg		response;
 	if (channel == NULL)
 		return 0;
 
 	channel->setTopic(msg.getTrailing());
-	channel->sendToChannel(IRCmsg(msg.getClient(), "localhost", "TOPIC", msg.getParameters(), topicmsg));
-
+	if (msg.getTrailing().empty())
+	{
+		response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), ":" + channel->getTopic());
+		msg.getClient()->appendToSendBuffer(response.toString());
+	}
+	else
+		response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), msg.getTrailing());
+	channel->sendToChannel(response);
+	msg.getClient()->appendToSendBuffer(response.toString());
 	return 0;
 }
 

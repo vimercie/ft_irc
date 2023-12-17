@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RPL.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 14:39:25 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 16:08:01 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 16:42:07 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@
 
 //topic
 #define RPL_NOTOPIC(channel)					("331" + std::string(channel)	+ " :No topic is set\r\n")
-#define RPL_TOPIC(channel, topic)				("332" + std::string(channel)	+ " TOPIC " + std::string(topic) + "\r\n")
-
+#define RPL_TOPIC(client, channel, topic)		("332 " + std::string(client)	+ " " + std::string(channel) + " :" + std::string(topic) + "\r\n")
+#define RPL_SETTOPIC(channel, topic)			("TOPIC " + std::string(channel)	+ " :" + std::string(topic) + "\r\n")
 //general
 #define RPL_WELCOME(nickname)					("001 " + std::string(nickname) + " :Welcome to ft_irc " + std::string(nickname) + "\r\n")
 #define RPL_NAMREPLY(channel, names)			("353 " + std::string(channel)	+ " = " + std::string(names) + "\r\n")
