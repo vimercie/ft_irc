@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 16:45:16 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 17:10:01 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,20 +86,19 @@ void	Channel::removeOperator(Client* client)
 	}
 }
 
-void	Channel::sendToChannel(const IRCmsg& msg)
+void	Channel::sendToChannel(const std::string& msg)
 {
 	const std::vector<Client*>& clients = getClients();
-	const Client*				sender = msg.getClient();
 
-    for (std::vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++)
+	for (std::vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++)
 	{
-        Client* client = *it;
+		Client* client = *it;
 
-        if (!client || client == sender)
+		if (!client)
 			continue;
 
-        client->appendToSendBuffer(msg.toString());
-    }
+		client->appendToSendBuffer(msg);
+	}
 }
 
 std::string	Channel::getTopic(void) const {return topic;}

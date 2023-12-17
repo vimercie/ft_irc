@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 16:59:35 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 17:13:36 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,7 @@ int	Server::topic(const IRCmsg& msg)
 		return 0;
 
 	channel->setTopic(msg.getTrailing());
+
 	if (msg.getTrailing().empty())
 	{
 		response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), ":" + channel->getTopic());
@@ -165,7 +166,8 @@ int	Server::topic(const IRCmsg& msg)
 	}
 	else
 		response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), msg.getTrailing());
-	channel->sendToChannel(response);
+	
+	channel->sendToChannel(response.toString());
 	msg.getClient()->appendToSendBuffer(response.toString());
 	return 0;
 }
@@ -191,10 +193,9 @@ int	Server::part(const IRCmsg& msg)
 		return 0;
 
 	channel->removeClient(msg.getClient());
-	channel->sendToChannel(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "PART", msg.getParameters(), msg.getTrailing()));
-
 	sender->removeChannel(channel);
-	sender->appendToSendBuffer(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "PART", msg.getParameters(), msg.getTrailing()).toString());
+
+	channel->sendToChannel(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "PART", msg.getParameters(), msg.getTrailing()).toString());
 
 	return 0;
 }
@@ -213,9 +214,18 @@ int	Server::ping(const IRCmsg& msg)
 // utils
 int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel)
 {
-	Client* sender = msg.getClient();
+	std::vector<Client*>	clients = channel->getClients();
+	Client* 				sender = msg.getClient();
 
-    channel->sendToChannel(IRCmsg(sender, sender->getNickname(), "PRIVMSG", msg.getParameters(), msg.getTrailing()));
+   	for (std::vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		Client* client = *it;
+
+		if (!client || client == sender)
+			continue;
+
+		client->appendToSendBuffer(msg.toString());
+	}
 
     return 0;
 }

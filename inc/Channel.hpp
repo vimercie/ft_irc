@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 14:16:31 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 17:10:07 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ class Channel
 		void					addOperator(Client* client);
 		void					removeOperator(Client* client);
 
-		void					sendToChannel(const IRCmsg& msg);
+		void					sendToChannel(const std::string& msg);
 };
 
 #endif
