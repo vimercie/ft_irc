@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 15:39:18 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 16:00:38 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ int Server::exec(const IRCmsg& msg)
 
 	cmds["JOIN"] 	= &Server::join;
 	cmds["PRIVMSG"]	= &Server::privmsg;
+	cmds["TOPIC"] 	= &Server::topic;
+	cmds["MODE"] 	= &Server::mode;
+	cmds["PART"] 	= &Server::part;
 
 	cmds["PING"] = &Server::ping;
 
@@ -163,7 +166,6 @@ int	Server::topic(const IRCmsg& msg)
 
 int	Server::mode(const IRCmsg& msg)
 {
-	IRCmsg	response;
 	Channel*	channel = getChannelByName(msg.getParameters()[0]);
 
 	if (channel == NULL)
@@ -171,13 +173,22 @@ int	Server::mode(const IRCmsg& msg)
 
 	channel->setMode(msg.getTrailing()[0], true);
 
-	response.setPrefix("localhost");
-	response.setCommand("MODE");
-	response.setParameters(msg.getParameters());
-	response.setTrailing(msg.getTrailing());
-	response.setClient(msg.getClient());
+	return 0;
+}
 
-	channel->sendToChannel(response);
+int	Server::part(const IRCmsg& msg)
+{
+	Client*		sender = msg.getClient();
+	Channel*	channel = getChannelByName(msg.getParameters()[0]);
+
+	if (channel == NULL)
+		return 0;
+
+	channel->removeClient(msg.getClient());
+	channel->sendToChannel(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "PART", msg.getParameters(), msg.getTrailing()));
+
+	sender->removeChannel(channel);
+	sender->appendToSendBuffer(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "PART", msg.getParameters(), msg.getTrailing()).toString());
 
 	return 0;
 }

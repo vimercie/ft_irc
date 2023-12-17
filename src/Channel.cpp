@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 14:25:07 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/17 16:06:25 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,13 +97,6 @@ void	Channel::sendToChannel(const IRCmsg& msg)
         if (!client || client == sender)
 			continue;
 
-        IRCmsg response;
-        response.setPrefix(sender->getNickname());
-        response.setCommand("PRIVMSG");
-        response.setParameters(std::vector<std::string>(1, getName()));
-        response.setTrailing(msg.getTrailing());
-        response.setClient(client);
-
-        client->appendToSendBuffer(response.toString());
+        client->appendToSendBuffer(msg.toString());
     }
 }
