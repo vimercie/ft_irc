@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 16:20:33 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 17:13:03 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,8 @@ class Server
 		int	join(const IRCmsg& msg);
 		int	privmsg(const IRCmsg& msg);
 		int	topic(const IRCmsg& msg);
-		int mode(const IRCmsg& msg);
 		int part(const IRCmsg& msg);
+		int mode(const IRCmsg& msg);
 
 		// server related commands
 		int	ping(const IRCmsg& msg);

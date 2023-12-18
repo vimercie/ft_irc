@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/18 17:06:46 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 17:16:56 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,27 +185,21 @@ int	Server::mode(const IRCmsg& msg)
 	msg.displayMessage();
 
 	if (channel == NULL)
-	{
-		std::cout << "channel not found------------------" << std::endl;
 		return 0;
-	}
+
 	if (msg.getParameters().size() == 1)
 	{
 		std::cout << "channel modes: " << channel->getModes() << std::endl;
 		msg.getClient()->appendToSendBuffer(RPL_CHANNELMODEIS(channel->getName(), channel->getModes()));
 		return 0;
 	}
+
 	std::string flag = msg.getParameters()[1];
 	if (flag[0] == '+' && knownFlags.find(flag[1]) != std::string::npos)
-	{
-		std::cout << "setting mode " << flag[1] << " to true" << std::endl;
 		channel->setMode(flag[1], true);
-	}
 	else if (flag[0] == '-' && knownFlags.find(flag[1]) != std::string::npos)
-	{
-		std::cout << "setting mode " << flag[1] << " to false" << std::endl;
 		channel->setMode(flag[1], false);
-	}
+
 
 	return 0;
 }
