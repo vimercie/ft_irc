@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/18 16:56:31 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 17:06:46 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,18 +191,11 @@ int	Server::mode(const IRCmsg& msg)
 	}
 	if (msg.getParameters().size() == 1)
 	{
-		std::cout << "asking for flags----------------------" << std::endl;
+		std::cout << "channel modes: " << channel->getModes() << std::endl;
+		msg.getClient()->appendToSendBuffer(RPL_CHANNELMODEIS(channel->getName(), channel->getModes()));
 		return 0;
 	}
-
 	std::string flag = msg.getParameters()[1];
-
-	std::cout << "flag: " << flag << std::endl;
-
-	if (flag[0] != '+' && flag[0] != '-')
-		return 0;
-	if (flag.size() > 2)
-		return 0;
 	if (flag[0] == '+' && knownFlags.find(flag[1]) != std::string::npos)
 	{
 		std::cout << "setting mode " << flag[1] << " to true" << std::endl;
