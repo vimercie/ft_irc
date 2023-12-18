@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/08 18:24:34 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/10 15:48:51 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 17:38:37 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,23 @@ void statusHandler(int sig)
 std::vector<std::string> splitString(const std::string& input, const std::string& separator)
 {
     std::vector<std::string>	result;
-    size_t						found = 0;
-	size_t						start = 0;
+    size_t 						found = 0;
+    size_t 						start = 0;
 
     while ((found = input.find(separator, start)) != std::string::npos)
 	{
-        result.push_back(input.substr(start, found - start));
-        start = found + separator.length();
+        // Inclure le séparateur dans le résultat
+        result.push_back(input.substr(start, found - start + separator.size()));
+        start = found + separator.size();
     }
-    result.push_back(input.substr(start));
+
+    // Ajouter le reste de la chaîne si nécessaire
+    if (start < input.size())
+        result.push_back(input.substr(start));
 
     return result;
 }
+
 
 std::string::const_iterator	getNextWord(std::string::const_iterator& it, const std::string& message, std::string& buffer)
 {

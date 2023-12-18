@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 16:11:33 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 21:04:58 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ bool	Client::operator==(const Client& other) const {return nickname == other.nic
 pollfd		Client::getSocket() const {return *socket;}
 const std::vector<std::string>&	Client::getRecvBuffer() const {return recvBuffer;}
 const std::vector<std::string>&	Client::getSendBuffer() const {return sendBuffer;}
+const std::string&	Client::getTmpBuffer() const {return tmpBuffer;}
 const std::string&	Client::getNickname() const {return nickname;}
 const std::string&	Client::getUsername() const {return username;}
 const std::string&	Client::getHostname() const {return hostname;}
@@ -56,21 +57,26 @@ int	Client::readFromSocket()
 
 	if (bytes_read < 0 && errno != EAGAIN)
 		return -1;
-	else if (bytes_read == 0)
-	{
-		setToDisconnect(true);
-		return 1;
-	}
 	else if (bytes_read > 0)
 	{
+		std::cout << "TEST" << std::endl;
 		std::vector<std::string>	msgs = splitString(buffer, "\r\n");
+
+		if (msgs.empty())
+			return 0;
 
 		for (std::vector<std::string>::iterator it = msgs.begin(); it != msgs.end(); it++)
 		{
+			appendToTmpBuffer(*it);
+
 			if (it->empty())
 				continue;
 
-			appendToRecvBuffer(*it);
+			if (getTmpBuffer().find("\r\n") != std::string::npos)
+			{
+				appendToRecvBuffer(getTmpBuffer());
+				clearTmpBuffer();
+			}
 		}
 	}
 
@@ -92,9 +98,11 @@ int	Client::sendToSocket()
 
 void	Client::appendToRecvBuffer(const std::string& msg) {recvBuffer.push_back(msg);}
 void	Client::appendToSendBuffer(const std::string& msg) {sendBuffer.push_back(msg);}
+void	Client::appendToTmpBuffer(const std::string& msg) {tmpBuffer += msg;}
 
 void	Client::clearRecvBuffer() {recvBuffer.clear();}
 void	Client::clearSendBuffer() {sendBuffer.clear();}
+void	Client::clearTmpBuffer() {tmpBuffer.clear();}
 
 void	Client::addChannel(Channel* channel) {channels.push_back(channel);}
 void	Client::removeChannel(Channel* channel)

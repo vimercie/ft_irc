@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:13:05 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/16 20:33:16 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 21:01:27 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <poll.h>
 # include <sys/socket.h>
 # include <cerrno>
+# include <cstdio>
 
 class Channel;
 class IRCmsg;
@@ -36,6 +37,7 @@ class	Client
 
 		std::vector<std::string>	recvBuffer;
 		std::vector<std::string>	sendBuffer;
+		std::string					tmpBuffer;
 
 		std::string					nickname;
 		std::string					username;
@@ -57,6 +59,7 @@ class	Client
 		pollfd								getSocket() const;
 		const std::vector<std::string>&		getRecvBuffer() const;
 		const std::vector<std::string>&		getSendBuffer() const;
+		const std::string&					getTmpBuffer() const;
 		const std::string&					getNickname() const;
 		const std::string&					getUsername() const;
 		const std::string&					getHostname() const;
@@ -81,8 +84,10 @@ class	Client
 
 		void	appendToRecvBuffer(const std::string& data);
 		void	appendToSendBuffer(const std::string& data);
+		void	appendToTmpBuffer(const std::string& data);
 		void	clearRecvBuffer();
 		void	clearSendBuffer();
+		void	clearTmpBuffer();
 
 		void	addChannel(Channel* channel);
 		void	removeChannel(Channel* channel);
