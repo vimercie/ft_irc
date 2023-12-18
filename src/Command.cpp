@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/17 17:27:35 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 14:55:58 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,7 @@ int	Server::join(const IRCmsg& msg)
 int Server::privmsg(const IRCmsg& msg)
 {
     Client *sender = msg.getClient();
+	IRCmsg response;
 
     if (!sender)
 		return 0;
@@ -136,8 +137,9 @@ int Server::privmsg(const IRCmsg& msg)
 
         if (!channel)
 			return 0;
-
-        return privmsgToChannel(msg, channel);
+		response = msg;
+		response.setPrefix(user_id(sender->getNickname(), sender->getUsername()));
+        return privmsgToChannel(response, channel);
     }
 	else	// Sinon, c'est un client
 	{
@@ -220,7 +222,6 @@ int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel)
 
 		if (!client || client == sender)
 			continue;
-
 		client->appendToSendBuffer(msg.toString());
 	}
 
