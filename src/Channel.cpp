@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 17:10:01 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 15:47:12 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,3 +102,16 @@ void	Channel::sendToChannel(const std::string& msg)
 }
 
 std::string	Channel::getTopic(void) const {return topic;}
+
+std::string	Channel::getModes(void) const
+{
+	std::string result;
+
+	for (std::map<char, bool>::const_iterator it = modes.begin(); it != modes.end(); it++)
+	{
+		if (it->second)
+			result += it->first;
+	}
+
+	return result;
+}

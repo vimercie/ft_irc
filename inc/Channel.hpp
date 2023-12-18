@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 17:10:07 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 15:46:13 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ class Channel
 		std::string				getTopic(void) const;
 		std::string				getKey(void) const;
 		bool					getMode(char mode) const;
+		std::string				getModes(void) const;
 
 		void					setTopic(const std::string& topic);
 		void					setKey(const std::string& key);

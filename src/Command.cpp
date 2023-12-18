@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/18 14:55:58 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 16:35:43 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ int	Server::quit(const IRCmsg& msg)
 int	Server::join(const IRCmsg& msg)
 {
 	Channel*					channel;
+	Client*						client = msg.getClient();
 
 	channel = getChannelByName(msg.getParameters()[0]);
 
@@ -116,10 +117,14 @@ int	Server::join(const IRCmsg& msg)
 	{
 		channel = new Channel(msg.getParameters()[0]);
 		channels.push_back(channel);
-		channel->addOperator(msg.getClient());
+		channel->addOperator(client);
 	}
 
-	channel->addClient(msg.getClient());
+	channel->addClient(client);
+	if (channel->getTopic().empty())
+		client->appendToSendBuffer(RPL_NOTOPIC(channel->getName()));
+	else
+		client->appendToSendBuffer(RPL_TOPIC(client->getNickname() , channel->getName(), channel->getTopic()));
 	return 0;
 }
 
@@ -173,13 +178,40 @@ int	Server::topic(const IRCmsg& msg)
 
 int	Server::mode(const IRCmsg& msg)
 {
-	Channel*	channel = getChannelByName(msg.getParameters()[0]);
+	Channel*	channel		= getChannelByName(msg.getParameters()[0]);
+	std::string knownFlags	= "iotkl";
+	msg.displayMessage();
 
 	if (channel == NULL)
+	{
+		std::cout << "channel not found------------------" << std::endl;
 		return 0;
+	}
+	if (msg.getParameters().size() == 1)
+	{
+		std::cout << "asking for flags----------------------" << std::endl;
+		return 0;
+	}
+	std::string flag = msg.getParameters()[1];
+	std::cout << "flag: " << flag << std::endl;
+	if (flag[0] != '+' && flag[0] != '-')
+		return 0;
+	if (flag.size() > 2)
+		return 0;
+	if (flag[0] == '+' && knownFlags.find(flag[1]) != std::string::npos)
+	{
+		std::cout << "setting mode " << flag[1] << " to true" << std::endl;
+		channel->setMode(flag[1], true);
+	}
+	else if (flag[0] == '-' && knownFlags.find(flag[1]) != std::string::npos)
+	{
+		std::cout << "setting mode " << flag[1] << " to false" << std::endl;
+		channel->setMode(flag[1], false);
+	}
+	
 
-	channel->setMode(msg.getTrailing()[0], true);
 
+	
 	return 0;
 }
 
