@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/17 14:16:10 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 17:00:22 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,8 +275,16 @@ Client*	Server::getClientByNickname(const std::string& nickname)
 
 Channel*	Server::getChannelByName(const std::string& name)
 {
+	std::string	channel_name = name;
+
+	if (name[0] != '#')
+		channel_name = "#" + name;
+
 	for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); it++)
-		if ((*it)->getName() == name)
+	{
+		if ((*it)->getName() == channel_name)
 			return *it;
+	}
+
 	return NULL;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/18 16:35:43 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 16:56:31 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,9 @@ int	Server::topic(const IRCmsg& msg)
 int	Server::mode(const IRCmsg& msg)
 {
 	Channel*	channel		= getChannelByName(msg.getParameters()[0]);
+
 	std::string knownFlags	= "iotkl";
+
 	msg.displayMessage();
 
 	if (channel == NULL)
@@ -192,8 +194,11 @@ int	Server::mode(const IRCmsg& msg)
 		std::cout << "asking for flags----------------------" << std::endl;
 		return 0;
 	}
+
 	std::string flag = msg.getParameters()[1];
+
 	std::cout << "flag: " << flag << std::endl;
+
 	if (flag[0] != '+' && flag[0] != '-')
 		return 0;
 	if (flag.size() > 2)
@@ -208,10 +213,7 @@ int	Server::mode(const IRCmsg& msg)
 		std::cout << "setting mode " << flag[1] << " to false" << std::endl;
 		channel->setMode(flag[1], false);
 	}
-	
 
-
-	
 	return 0;
 }
 

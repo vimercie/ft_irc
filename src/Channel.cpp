@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/18 15:47:12 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 16:49:58 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "../inc/Client.hpp"
 #include "../inc/IRCmsg.hpp"
 
-Channel::Channel(std::string name) : name(name)
+Channel::Channel(const std::string& name) : name(name)
 {
 	if (name.length() > CHANNEL_NAME_MAX_LENGTH)
 		this->name = name.substr(0, CHANNEL_NAME_MAX_LENGTH);
@@ -48,6 +48,8 @@ std::string	Channel::getNamesList(void)
 	return result;
 }
 
+// setters
+void	Channel::setName(const std::string& name) {this->name = name;}
 void	Channel::setTopic(const std::string& topic) {this->topic = topic;}
 void	Channel::setKey(const std::string& key) {this->key = key;}
 void	Channel::setMode(char mode, bool value) {modes[mode] = value;}

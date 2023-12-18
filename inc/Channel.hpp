@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/18 15:46:13 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/18 16:50:27 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,10 @@ class Channel
 		std::string					topic;
 
 	public:
-		Channel(std::string name);
+		Channel(const std::string& name);
 		~Channel();
 
+	// getters
 		std::string				getName(void) const;
 		std::string				getNamesList(void);
 		std::vector<Client*>	getClients(void) const;
@@ -55,6 +56,8 @@ class Channel
 		bool					getMode(char mode) const;
 		std::string				getModes(void) const;
 
+	// setters
+		void					setName(const std::string& name);
 		void					setTopic(const std::string& topic);
 		void					setKey(const std::string& key);
 		void					setMode(char mode, bool value);
