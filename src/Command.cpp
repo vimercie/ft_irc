@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/19 19:42:06 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 20:08:30 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,7 +204,10 @@ int	Server::mode(const IRCmsg& msg)
 	Channel*	channel		= getChannelByName(msg.getParameters()[0]);
 
 	if (channel == NULL)
+	{
+		std::cout << "channel not found" << std::endl;
 		return 0;
+	}
 
 	// if asked for channel modes (no permission needed)
 	if (msg.getParameters().size() == 1 && msg.getParameters()[0] == channel->getName())
@@ -216,11 +219,18 @@ int	Server::mode(const IRCmsg& msg)
 
 	// if not operator
 	if (!channel->isOperator(msg.getClient()))
+	{
+		std::cout << "not operator" << std::endl;
+		//send message to client
+		msg.getClient()->appendToSendBuffer("You are not operator");
 		return 0;
+	}
 
 	// if mode +o or -o
-	if (msg.getParameters().size() == 3 && msg.getParameters()[1] == "o")
+	msg.displayMessage();
+	if (msg.getParameters().size() == 3 && msg.getParameters()[1][0] == 'o')
 	{
+		std::cout << "setting mode o for channel " << channel->getName() << std::endl;
 		Client* client = getClientByNickname(msg.getParameters()[2]);
 
 		if (client == NULL)
@@ -237,8 +247,9 @@ int	Server::mode(const IRCmsg& msg)
 	}
 
 	// if mode +l or -l
-	if (msg.getParameters().size() == 3 && msg.getParameters()[1] == "l")
+	if (msg.getParameters().size() == 3 && msg.getParameters()[1][0] == 'l')
 	{
+		std::cout << "setting mode l for channel " << channel->getName() << std::endl;
 		if (msg.getParameters()[0] != channel->getName())
 			return 0;
 
@@ -256,8 +267,9 @@ int	Server::mode(const IRCmsg& msg)
 	}
 
 	// if mode +k or -k
-	if (msg.getParameters().size() == 3 && msg.getParameters()[1] == "k")
+	if (msg.getParameters().size() == 3 && msg.getParameters()[1][0] == 'k')
 	{
+		std::cout << "setting mode k for channel " << channel->getName() << std::endl;
 		if (msg.getParameters()[0] != channel->getName())
 			return 0;
 
@@ -274,12 +286,18 @@ int	Server::mode(const IRCmsg& msg)
 		return 0;
 	}
 	// if mode +i or -i
-	if (msg.getParameters().size() == 2 && msg.getParameters()[1] == "i")
+	if (msg.getParameters().size() == 2 && msg.getParameters()[1][1] == 'i')
 	{
 		if (msg.getParameters()[0] != channel->getName())
+		{
+			std::cout << "channel name not matching" << std::endl;
 			return 0;
+		}
 		if (msg.getParameters()[0] == channel->getName() && msg.getParameters()[1] == "+i")
+		{
+			std::cout << "setting mode i for channel " << channel->getName() << std::endl;
 			channel->setMode('i', true);
+		}
 		else if (msg.getParameters()[0] == channel->getName() && msg.getParameters()[1] == "-i")
 			channel->setMode('i', false);
 		return 0;

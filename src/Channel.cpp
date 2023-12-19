@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:39:25 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:52:18 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ Channel::Channel(const std::string& name) : name(name)
 	modes['i'] = false;
 	modes['t'] = true;
 	modes['k'] = false;
-	modes['o'] = false;
 	modes['l'] = false;
 	limit = 0;
 	key = "";

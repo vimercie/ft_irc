@@ -181,4 +181,5 @@ void	IRCmsg::displayMessage() const
 		std::cout << "|" << *it << "|" << " ";
 	std::cout << std::endl;
 	std::cout << "trailing = " << "|" << trailing << "|" << std::endl;
+	std::cout << "param size = " << parameters.size() << std::endl;
 }
