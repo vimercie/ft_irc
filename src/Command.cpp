@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/19 18:59:55 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:05:08 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,14 +119,16 @@ int	Server::join(const IRCmsg& msg)
 		channels.push_back(channel);
 		channel->addOperator(client);
 	}
+
 	//if channel limit reached
 	if (channel->getLimit() != 0 && channel->getClients().size() + 1 > channel->getLimit())
 	{
 		client->appendToSendBuffer("Channel is full");
 		return 0;
 	}
-	// if channel is private
+
 	channel->addClient(client);
+
 	if (channel->getTopic().empty())
 		client->appendToSendBuffer(RPL_NOTOPIC(channel->getName()));
 	else
@@ -192,6 +194,7 @@ int	Server::mode(const IRCmsg& msg)
 
 	if (channel == NULL)
 		return 0;
+
 	// if asked for channel modes (no permission needed)
 	if (msg.getParameters().size() == 1 && msg.getParameters()[0] == channel->getName())
 	{
@@ -199,6 +202,7 @@ int	Server::mode(const IRCmsg& msg)
 		msg.getClient()->appendToSendBuffer(RPL_CHANNELMODEIS(channel->getName(), channel->getModes()));
 		return 0;
 	}
+
 	// if not operator
 	if (!channel->isOperator(msg.getClient()))
 		return 0;
@@ -220,6 +224,7 @@ int	Server::mode(const IRCmsg& msg)
 			channel->removeOperator(client);
 		return 0;
 	}
+
 	// if mode +l or -l
 	if (msg.getParameters().size() == 3 && msg.getParameters()[1] == "l")
 	{
@@ -238,6 +243,7 @@ int	Server::mode(const IRCmsg& msg)
 		}
 		return 0;
 	}
+
 	// if mode +k or -k
 	if (msg.getParameters().size() == 3 && msg.getParameters()[1] == "k")
 	{
@@ -256,9 +262,10 @@ int	Server::mode(const IRCmsg& msg)
 		}
 		return 0;
 	}
+
 	// if mode +t or -t
-	
 	std::string flag = msg.getParameters()[1];
+
 	if (flag[0] == '+' && knownFlags.find(flag[1]) != std::string::npos)
 		channel->setMode(flag[1], true);
 	else if (flag[0] == '-' && knownFlags.find(flag[1]) != std::string::npos)
@@ -292,7 +299,6 @@ int	Server::ping(const IRCmsg& msg)
 
 	return 0;
 }
-
 
 // utils
 int Server::privmsgToChannel(const IRCmsg& msg, Channel* channel)

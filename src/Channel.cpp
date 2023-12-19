@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:05:40 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:08:22 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ Channel::~Channel() {std::cout << "Channel " + name + " destroyed" << std::endl;
 // getters
 std::string	Channel::getName(void) const {return name;}
 std::vector<Client*>	Channel::getClients(void) const {return clients;}
-
+std::string		Channel::getKey(void) const {return key;}
+unsigned int	Channel::getLimit(void) const {return limit;}
 std::string	Channel::getNamesList(void)
 {
 	std::string	result;
@@ -55,6 +56,7 @@ void	Channel::setName(const std::string& name) {this->name = name;}
 void	Channel::setTopic(const std::string& topic) {this->topic = topic;}
 void	Channel::setKey(const std::string& key) {this->key = key;}
 void	Channel::setMode(char mode, bool value) {modes[mode] = value;}
+void	Channel::setLimit(unsigned int limit) {this->limit = limit;}
 
 void	Channel::addClient(Client* client)
 {

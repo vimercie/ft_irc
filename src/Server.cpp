@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/18 17:00:22 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:03:21 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,7 +233,7 @@ void	Server::processCommands(Client *client)
 
 	for (std::vector<std::string>::iterator it = recvData.begin(); it != recvData.end(); ++it)
 	{
-		std::cout << "<" + client->getNickname() + ">" + " : " + *it << std::endl;
+		std::cout << "<" + client->getNickname() + ">" + " : " + *it;
 
 		IRCmsg msg(client, *it);
 

@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/18 21:04:58 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:02:22 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ int	Client::readFromSocket()
 		return -1;
 	else if (bytes_read > 0)
 	{
-		std::cout << "TEST" << std::endl;
 		std::vector<std::string>	msgs = splitString(buffer, "\r\n");
 
 		if (msgs.empty())
