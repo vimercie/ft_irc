@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/19 19:00:17 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:05:08 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,7 @@ int	Server::mode(const IRCmsg& msg)
 		return 0;
 
 	// if asked for channel modes (no permission needed)
-	if (msg.getParameters().size() == 1)
+	if (msg.getParameters().size() == 1 && msg.getParameters()[0] == channel->getName())
 	{
 		std::cout << "channel modes: " << channel->getModes() << std::endl;
 		msg.getClient()->appendToSendBuffer(RPL_CHANNELMODEIS(channel->getName(), channel->getModes()));
@@ -206,10 +206,6 @@ int	Server::mode(const IRCmsg& msg)
 	// if not operator
 	if (!channel->isOperator(msg.getClient()))
 		return 0;
-
-	msg.displayMessage();
-
-	// if asked for channel modes
 
 	// if mode +o or -o
 	if (msg.getParameters().size() == 3 && msg.getParameters()[1] == "o")
