@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:08:22 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:09:23 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,14 +142,11 @@ bool	Channel::isOperator(Client* client) const
 	return std::find(operators.begin(), operators.end(), client) != operators.end();
 }
 
-std::string		Channel::getKey(void) const {return key;}
-unsigned int	Channel::getLimit(void) const {return limit;}
-void			Channel::setLimit(unsigned int limit) {this->limit = limit;}
-
 void			Channel::invite(Client* client)
 {
 	if (isInvited(client))
 		return;
+
 	invited.push_back(client);
 }
 
