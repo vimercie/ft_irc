@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/18 16:49:58 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 18:35:58 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ Channel::Channel(const std::string& name) : name(name)
 	modes['k'] = false;
 	modes['o'] = false;
 	modes['l'] = false;
+	limit = 0;
+	key = "";
 }
 
 Channel::~Channel() {std::cout << "Channel " + name + " destroyed" << std::endl;}
@@ -74,11 +76,17 @@ void	Channel::removeClient(Client* client)
 
 void	Channel::addOperator(Client* client)
 {
+	// if already operator
+	if (isOperator(client))
+		return;
 	operators.push_back(client);
 }
 
 void	Channel::removeOperator(Client* client)
 {
+	// if not operator
+	if (!isOperator(client))
+		return;
 	std::vector<Client*>::iterator it = std::find(operators.begin(), operators.end(), client);
 
 	if (it != operators.end())
@@ -105,6 +113,15 @@ void	Channel::sendToChannel(const std::string& msg)
 
 std::string	Channel::getTopic(void) const {return topic;}
 
+bool	Channel::getMode(char mode) const
+{
+	std::map<char, bool>::const_iterator it = modes.find(mode);
+
+	if (it == modes.end())
+		return false;
+	return it->second;
+}
+
 std::string	Channel::getModes(void) const
 {
 	std::string result;
@@ -117,3 +134,13 @@ std::string	Channel::getModes(void) const
 
 	return result;
 }
+
+bool	Channel::isOperator(Client* client) const
+{
+	return std::find(operators.begin(), operators.end(), client) != operators.end();
+}
+
+std::string		Channel::getKey(void) const {return key;}
+unsigned int	Channel::getLimit(void) const {return limit;}
+void			Channel::setLimit(unsigned int limit) {this->limit = limit;}
+void			Channel::setKey(const std::string& key) {this->key = key;}

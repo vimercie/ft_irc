@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/18 17:12:26 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 18:35:14 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,11 @@ class Channel
 		std::string 				name;
 		std::vector<Client*>		clients;
 		std::vector<Client*>		operators;
+		std::vector<Client*>		invited;
 		std::map<std::string, cmd>	cmds;  
 		std::map<char , bool>		modes; // i, t, k, o, l 
 		std::string					key; // password
+		unsigned int				limit;
 		std::string					topic;
 
 	public:
@@ -55,12 +57,16 @@ class Channel
 		std::string				getKey(void) const;
 		bool					getMode(char mode) const;
 		std::string				getModes(void) const;
+		unsigned int			getLimit(void) const;
+
+		bool					isOperator(Client* client) const;
 
 	// setters
 		void					setName(const std::string& name);
 		void					setTopic(const std::string& topic);
 		void					setKey(const std::string& key);
 		void					setMode(char mode, bool value);
+		void					setLimit(unsigned int limit);
 
 		void					addClient(Client* client);
 		void					removeClient(Client* client);

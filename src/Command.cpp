@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/18 17:16:56 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 18:46:57 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,13 @@ int	Server::join(const IRCmsg& msg)
 		channels.push_back(channel);
 		channel->addOperator(client);
 	}
-
+	//if channel limit reached
+	if (channel->getLimit() != 0 && channel->getClients().size() + 1 > channel->getLimit())
+	{
+		client->appendToSendBuffer("Channel is full");
+		return 0;
+	}
+	// if channel is private
 	channel->addClient(client);
 	if (channel->getTopic().empty())
 		client->appendToSendBuffer(RPL_NOTOPIC(channel->getName()));
@@ -165,12 +171,14 @@ int	Server::topic(const IRCmsg& msg)
 	if (channel == NULL)
 		return 0;
 
+	// if not operator and -t flag set
+	if (channel->getMode('t') && !channel->isOperator(msg.getClient()))
+		return 0;
 
 	if (!msg.getTrailing().empty())
 		channel->setTopic(msg.getTrailing());
 
 	response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), channel->getTopic());
-
 	channel->sendToChannel(response.toString());
 
 	return 0;
@@ -182,24 +190,83 @@ int	Server::mode(const IRCmsg& msg)
 
 	std::string knownFlags	= "iotkl";
 
-	msg.displayMessage();
-
 	if (channel == NULL)
 		return 0;
-
+	// if asked for channel modes (no permission needed)
 	if (msg.getParameters().size() == 1)
 	{
 		std::cout << "channel modes: " << channel->getModes() << std::endl;
 		msg.getClient()->appendToSendBuffer(RPL_CHANNELMODEIS(channel->getName(), channel->getModes()));
 		return 0;
 	}
+	// if not operator
+	if (!channel->isOperator(msg.getClient()))
+		return 0;
 
+	msg.displayMessage();
+
+	// if asked for channel modes
+
+	// if mode +o or -o
+	if (msg.getParameters().size() == 3 && msg.getParameters()[1] == "o")
+	{
+		Client* client = getClientByNickname(msg.getParameters()[2]);
+
+		if (client == NULL)
+			return 0;
+
+		if (msg.getParameters()[0] != client->getNickname())
+			return 0;
+
+		if (msg.getParameters()[0] == client->getNickname() && msg.getParameters()[1] == "+o")
+			channel->addOperator(client);
+		else if (msg.getParameters()[0] == client->getNickname() && msg.getParameters()[1] == "-o")
+			channel->removeOperator(client);
+		return 0;
+	}
+	// if mode +l or -l
+	if (msg.getParameters().size() == 3 && msg.getParameters()[1] == "l")
+	{
+		if (msg.getParameters()[0] != channel->getName())
+			return 0;
+
+		if (msg.getParameters()[0] == channel->getName() && msg.getParameters()[1] == "+l")
+		{
+			channel->setMode('l', true);
+			channel->setLimit(std::stoi(msg.getParameters()[2]));
+		}
+		else if (msg.getParameters()[0] == channel->getName() && msg.getParameters()[1] == "-l")
+		{
+			channel->setMode('l', false);
+			channel->setLimit(0);
+		}
+		return 0;
+	}
+	// if mode +k or -k
+	if (msg.getParameters().size() == 3 && msg.getParameters()[1] == "k")
+	{
+		if (msg.getParameters()[0] != channel->getName())
+			return 0;
+
+		if (msg.getParameters()[0] == channel->getName() && msg.getParameters()[1] == "+k")
+		{
+			channel->setMode('k', true);
+			channel->setKey(msg.getParameters()[2]);
+		}
+		else if (msg.getParameters()[0] == channel->getName() && msg.getParameters()[1] == "-k")
+		{
+			channel->setMode('k', false);
+			channel->setKey("");
+		}
+		return 0;
+	}
+	// if mode +t or -t
+	
 	std::string flag = msg.getParameters()[1];
 	if (flag[0] == '+' && knownFlags.find(flag[1]) != std::string::npos)
 		channel->setMode(flag[1], true);
 	else if (flag[0] == '-' && knownFlags.find(flag[1]) != std::string::npos)
 		channel->setMode(flag[1], false);
-
 
 	return 0;
 }
