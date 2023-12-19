@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 18:57:35 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:05:40 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,3 +143,28 @@ bool	Channel::isOperator(Client* client) const
 std::string		Channel::getKey(void) const {return key;}
 unsigned int	Channel::getLimit(void) const {return limit;}
 void			Channel::setLimit(unsigned int limit) {this->limit = limit;}
+
+void			Channel::invite(Client* client)
+{
+	if (isInvited(client))
+		return;
+	invited.push_back(client);
+}
+
+void			Channel::uninvite(Client* client)
+{
+	if (!isInvited(client))
+		return;
+	std::vector<Client*>::iterator it = std::find(invited.begin(), invited.end(), client);
+
+	if (it != invited.end())
+	{
+		std::cout << "Client " << client->getNickname() << " removed from invited of channel " << name << std::endl;
+		invited.erase(it);
+	}
+}
+
+bool			Channel::isInvited(Client* client) const
+{
+	return std::find(invited.begin(), invited.end(), client) != invited.end();
+}

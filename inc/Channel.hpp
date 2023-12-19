@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 18:35:14 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:03:16 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ class Channel
 		unsigned int			getLimit(void) const;
 
 		bool					isOperator(Client* client) const;
+		bool					isInvited(Client* client) const;
 
 	// setters
 		void					setName(const std::string& name);
@@ -67,7 +68,8 @@ class Channel
 		void					setKey(const std::string& key);
 		void					setMode(char mode, bool value);
 		void					setLimit(unsigned int limit);
-
+		void					invite(Client* client);
+		void					uninvite(Client* client);
 		void					addClient(Client* client);
 		void					removeClient(Client* client);
 
