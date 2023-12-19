@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/19 20:08:30 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 21:33:55 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,8 @@ int	Server::join(const IRCmsg& msg)
 	//if channel is invite only
 	if (channel->getMode('i') && !channel->isInvited(client))
 	{
-		client->appendToSendBuffer("You are not invited on this channel");
+		std::cout << "channel is invite only" << std::endl;
+		sendMsg(client->getSocket().fd, ERR_INVITEONLYCHAN(client->getNickname(), channel->getName()));
 		return 0;
 	}
 	//if channel is password protected
@@ -155,7 +156,9 @@ int Server::privmsg(const IRCmsg& msg)
 	IRCmsg response;
 
     if (!sender)
+	{
 		return 0;
+	}
 
     if (msg.getParameters()[0][0] == '#')	// Si le premier paramètre commence par un #, c'est un canal
 	{
@@ -191,7 +194,10 @@ int	Server::topic(const IRCmsg& msg)
 		return 0;
 
 	if (!msg.getTrailing().empty())
+	{
 		channel->setTopic(msg.getTrailing());
+		std::cout << "topic of " << channel->getName() << " set to " << channel->getTopic() << std::endl;
+	}
 
 	response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), channel->getTopic());
 	channel->sendToChannel(response.toString());
@@ -209,6 +215,7 @@ int	Server::mode(const IRCmsg& msg)
 		return 0;
 	}
 
+	
 	// if asked for channel modes (no permission needed)
 	if (msg.getParameters().size() == 1 && msg.getParameters()[0] == channel->getName())
 	{
