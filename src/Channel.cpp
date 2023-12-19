@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 20:14:12 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 22:29:21 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,29 +135,9 @@ void	Channel::sendToChannel(const std::string& msg)
 		client->appendToSendBuffer(msg);
 	}
 }
-
-void	Channel::invite(Client* client)
+void	Channel::sendInvite(Client* client)
 {
 	if (isInvited(client))
 		return;
-
-	invited.push_back(client);
-}
-
-void	Channel::uninvite(Client* client)
-{
-	if (!isInvited(client))
-		return;
-	std::vector<Client*>::iterator it = std::find(invited.begin(), invited.end(), client);
-
-	if (it != invited.end())
-	{
-		std::cout << "Client " << client->getNickname() << " removed from invited of channel " << name << std::endl;
-		invited.erase(it);
-	}
-}
-
-void	Channel::sendInvite(Client* client)
-{
 	invited.push_back(client);
 }

@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:34:05 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 22:30:12 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,7 @@ class Server
 		int 	part(const IRCmsg& msg);
 		int 	mode(const IRCmsg& msg);
 		int		invite(const IRCmsg& msg);
-		int		uninvite(const IRCmsg& msg);
-
+		int		kick(const IRCmsg& msg);
 		// server related commands
 		int	ping(const IRCmsg& msg);
 

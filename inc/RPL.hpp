@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 14:39:25 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/19 21:28:18 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 23:11:54 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,3 +39,6 @@
 //invite
 #define RPL_INVITING(nickname, channel)			("341 " + std::string(nickname)	+ " " + std::string(channel) + "\r\n")
 #define ERR_INVITEONLYCHAN(nickname, channel)	("473 " + std::string(nickname)	+ " " + std::string(channel) + " :Cannot join channel (+i)\r\n")
+
+//kick
+#define ERR_NOTONCHANNEL(channel)				("442 " + std::string(channel)	+ " :You're not on that channel\r\n")

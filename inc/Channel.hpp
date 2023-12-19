@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:50:10 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 22:29:24 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,6 @@ class Channel
 		void					sendToChannel(const std::string& msg);
 
 		void					sendInvite(Client* client);
-		void					invite(Client* client);
-		void					uninvite(Client* client);
 };
 
 #endif
