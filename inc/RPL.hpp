@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 14:39:25 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/18 15:25:52 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:40:24 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,3 +35,6 @@
 #define ERR_UMODEUNKNOWNFLAG(flag)				("501 " + std::string(flag)		+ " :Unknown MODE flag\r\n")
 #define ERR_USERSDONTMATCH(nickname)			("502 " + std::string(nickname)	+ " :Cant change mode for other users\r\n")
 #define ERR_UNKNOWNMODE(flag)					("501 " + std::string(flag)		+ " :Unknown MODE flag\r\n")
+
+//invite
+#define RPL_INVITING(nickname, channel)			("341 " + std::string(nickname)	+ " " + std::string(channel) + "\r\n")

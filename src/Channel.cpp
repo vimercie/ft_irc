@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:25:19 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:49:54 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ std::string	Channel::getTopic(void) const {return topic;}
 std::string		Channel::getKey(void) const {return key;}
 unsigned int	Channel::getLimit(void) const {return limit;}
 bool	Channel::isOperator(Client* client) const {return std::find(operators.begin(), operators.end(), client) != operators.end();}
+bool	Channel::isInvited(Client* client) const {return std::find(invited.begin(), invited.end(), client) != invited.end();}
 bool	Channel::getMode(char mode) const
 {
 	std::map<char, bool>::const_iterator it = modes.find(mode);
@@ -157,7 +158,7 @@ void	Channel::uninvite(Client* client)
 	}
 }
 
-bool	Channel::isInvited(Client* client) const
+void	Channel::sendInvite(Client* client)
 {
-	return std::find(invited.begin(), invited.end(), client) != invited.end();
+	invited.push_back(client);
 }
