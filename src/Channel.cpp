@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 18:35:58 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 18:57:35 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,4 +143,3 @@ bool	Channel::isOperator(Client* client) const
 std::string		Channel::getKey(void) const {return key;}
 unsigned int	Channel::getLimit(void) const {return limit;}
 void			Channel::setLimit(unsigned int limit) {this->limit = limit;}
-void			Channel::setKey(const std::string& key) {this->key = key;}

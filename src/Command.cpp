@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/19 18:46:57 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 18:59:55 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,7 @@ int	Server::mode(const IRCmsg& msg)
 	if (channel == NULL)
 		return 0;
 	// if asked for channel modes (no permission needed)
-	if (msg.getParameters().size() == 1)
+	if (msg.getParameters().size() == 1 && msg.getParameters()[0] == channel->getName())
 	{
 		std::cout << "channel modes: " << channel->getModes() << std::endl;
 		msg.getClient()->appendToSendBuffer(RPL_CHANNELMODEIS(channel->getName(), channel->getModes()));
@@ -202,10 +202,6 @@ int	Server::mode(const IRCmsg& msg)
 	// if not operator
 	if (!channel->isOperator(msg.getClient()))
 		return 0;
-
-	msg.displayMessage();
-
-	// if asked for channel modes
 
 	// if mode +o or -o
 	if (msg.getParameters().size() == 3 && msg.getParameters()[1] == "o")
@@ -233,7 +229,7 @@ int	Server::mode(const IRCmsg& msg)
 		if (msg.getParameters()[0] == channel->getName() && msg.getParameters()[1] == "+l")
 		{
 			channel->setMode('l', true);
-			channel->setLimit(std::stoi(msg.getParameters()[2]));
+			channel->setLimit(std::atoi(msg.getParameters()[2].c_str()));
 		}
 		else if (msg.getParameters()[0] == channel->getName() && msg.getParameters()[1] == "-l")
 		{
