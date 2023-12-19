@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:39:08 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:50:10 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ class Channel
 		void					setKey(const std::string& key);
 		void					setMode(char mode, bool value);
 		void					setLimit(unsigned int limit);
-		void					sendInvite(Client* client);
+
 		void					addClient(Client* client);
 		void					removeClient(Client* client);
 
@@ -76,6 +76,10 @@ class Channel
 		void					removeOperator(Client* client);
 
 		void					sendToChannel(const std::string& msg);
+
+		void					sendInvite(Client* client);
+		void					invite(Client* client);
+		void					uninvite(Client* client);
 };
 
 #endif

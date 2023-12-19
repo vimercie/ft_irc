@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:52:18 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 20:14:12 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,31 @@ Channel::~Channel() {std::cout << "Channel " + name + " destroyed" << std::endl;
 // getters
 std::string	Channel::getName(void) const {return name;}
 std::vector<Client*>	Channel::getClients(void) const {return clients;}
+std::string	Channel::getTopic(void) const {return topic;}
 std::string		Channel::getKey(void) const {return key;}
 unsigned int	Channel::getLimit(void) const {return limit;}
+bool	Channel::isOperator(Client* client) const {return std::find(operators.begin(), operators.end(), client) != operators.end();}
+bool	Channel::isInvited(Client* client) const {return std::find(invited.begin(), invited.end(), client) != invited.end();}
+bool	Channel::getMode(char mode) const
+{
+	std::map<char, bool>::const_iterator it = modes.find(mode);
+
+	if (it == modes.end())
+		return false;
+	return it->second;
+}
+std::string	Channel::getModes(void) const
+{
+	std::string result;
+
+	for (std::map<char, bool>::const_iterator it = modes.begin(); it != modes.end(); it++)
+	{
+		if (it->second)
+			result += it->first;
+	}
+
+	return result;
+}
 std::string	Channel::getNamesList(void)
 {
 	std::string	result;
@@ -49,6 +72,7 @@ std::string	Channel::getNamesList(void)
 
 	return result;
 }
+
 
 // setters
 void	Channel::setName(const std::string& name) {this->name = name;}
@@ -112,41 +136,28 @@ void	Channel::sendToChannel(const std::string& msg)
 	}
 }
 
-std::string	Channel::getTopic(void) const {return topic;}
-
-bool	Channel::getMode(char mode) const
+void	Channel::invite(Client* client)
 {
-	std::map<char, bool>::const_iterator it = modes.find(mode);
+	if (isInvited(client))
+		return;
 
-	if (it == modes.end())
-		return false;
-	return it->second;
+	invited.push_back(client);
 }
 
-std::string	Channel::getModes(void) const
+void	Channel::uninvite(Client* client)
 {
-	std::string result;
+	if (!isInvited(client))
+		return;
+	std::vector<Client*>::iterator it = std::find(invited.begin(), invited.end(), client);
 
-	for (std::map<char, bool>::const_iterator it = modes.begin(); it != modes.end(); it++)
+	if (it != invited.end())
 	{
-		if (it->second)
-			result += it->first;
+		std::cout << "Client " << client->getNickname() << " removed from invited of channel " << name << std::endl;
+		invited.erase(it);
 	}
-
-	return result;
 }
 
-bool	Channel::isOperator(Client* client) const
-{
-	return std::find(operators.begin(), operators.end(), client) != operators.end();
-}
-
-bool			Channel::isInvited(Client* client) const
-{
-	return std::find(invited.begin(), invited.end(), client) != invited.end();
-}
-
-void			Channel::sendInvite(Client* client)
+void	Channel::sendInvite(Client* client)
 {
 	invited.push_back(client);
 }

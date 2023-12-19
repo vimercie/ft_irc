@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:02:22 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:36:26 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,11 @@ int	Client::readFromSocket()
 
 	if (bytes_read < 0 && errno != EAGAIN)
 		return -1;
+	else if (bytes_read == 0)
+	{
+		setToDisconnect(true);
+		return 1;
+	}
 	else if (bytes_read > 0)
 	{
 		std::vector<std::string>	msgs = splitString(buffer, "\r\n");
