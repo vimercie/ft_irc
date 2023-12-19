@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/19 19:05:08 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:42:06 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ int Server::exec(const IRCmsg& msg)
 	cmds["TOPIC"] 	= &Server::topic;
 	cmds["MODE"] 	= &Server::mode;
 	cmds["PART"] 	= &Server::part;
+	cmds["INVITE"] 	= &Server::invite;
+	cmds["UNINVITE"] = &Server::uninvite;
 
 	cmds["PING"] = &Server::ping;
 
@@ -126,7 +128,18 @@ int	Server::join(const IRCmsg& msg)
 		client->appendToSendBuffer("Channel is full");
 		return 0;
 	}
-
+	//if channel is invite only
+	if (channel->getMode('i') && !channel->isInvited(client))
+	{
+		client->appendToSendBuffer("You are not invited on this channel");
+		return 0;
+	}
+	//if channel is password protected
+	if (channel->getMode('k') && channel->getKey() != msg.getParameters()[1])
+	{
+		client->appendToSendBuffer("Wrong password");
+		return 0;
+	}
 	channel->addClient(client);
 
 	if (channel->getTopic().empty())
@@ -189,8 +202,6 @@ int	Server::topic(const IRCmsg& msg)
 int	Server::mode(const IRCmsg& msg)
 {
 	Channel*	channel		= getChannelByName(msg.getParameters()[0]);
-
-	std::string knownFlags	= "iotkl";
 
 	if (channel == NULL)
 		return 0;
@@ -262,15 +273,17 @@ int	Server::mode(const IRCmsg& msg)
 		}
 		return 0;
 	}
-
-	// if mode +t or -t
-	std::string flag = msg.getParameters()[1];
-
-	if (flag[0] == '+' && knownFlags.find(flag[1]) != std::string::npos)
-		channel->setMode(flag[1], true);
-	else if (flag[0] == '-' && knownFlags.find(flag[1]) != std::string::npos)
-		channel->setMode(flag[1], false);
-
+	// if mode +i or -i
+	if (msg.getParameters().size() == 2 && msg.getParameters()[1] == "i")
+	{
+		if (msg.getParameters()[0] != channel->getName())
+			return 0;
+		if (msg.getParameters()[0] == channel->getName() && msg.getParameters()[1] == "+i")
+			channel->setMode('i', true);
+		else if (msg.getParameters()[0] == channel->getName() && msg.getParameters()[1] == "-i")
+			channel->setMode('i', false);
+		return 0;
+	}
 	return 0;
 }
 
@@ -332,4 +345,48 @@ int Server::privmsgToClient(const IRCmsg& msg, Client* recipient)
     recipient->appendToSendBuffer(response.toString());
 
     return 0;
+}
+
+int	Server::invite(const IRCmsg& msg)
+{
+	Client*		sender = msg.getClient();
+	Client*		client = getClientByNickname(msg.getParameters()[0]);
+	Channel*	channel = getChannelByName(msg.getParameters()[1]);
+
+	if (client == NULL || channel == NULL)
+		return 0;
+
+	if (!channel->isOperator(sender))
+		return 0;
+
+	// if client already invited
+	if (channel->isInvited(client))
+		return 0;
+	channel->sendInvite(client);
+	client->appendToSendBuffer(RPL_INVITING(client->getNickname(), channel->getName()));
+	client->appendToSendBuffer(RPL_TOPIC(client->getNickname(), channel->getName(), channel->getTopic()));
+
+	return 0;
+}
+
+int	Server::uninvite(const IRCmsg& msg)
+{
+	Client*		sender = msg.getClient();
+	Client*		client = getClientByNickname(msg.getParameters()[0]);
+	Channel*	channel = getChannelByName(msg.getParameters()[1]);
+
+	if (client == NULL || channel == NULL)
+		return 0;
+
+	if (!channel->isOperator(sender))
+		return 0;
+
+	// if client not invited
+	if (!channel->isInvited(client))
+		return 0;
+
+	channel->removeClient(client);
+	client->removeChannel(channel);
+
+	return 0;
 }

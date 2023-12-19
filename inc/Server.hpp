@@ -6,7 +6,7 @@
 /*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/18 17:13:03 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/19 19:34:05 by mmajani          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,17 +72,19 @@ class Server
 		int	exec(const IRCmsg& msg);
 
 		// user related commands
-		int	nick(const IRCmsg& msg);
-		int	user(const IRCmsg& msg);
-		int	pass(const IRCmsg& msg);
-		int	quit(const IRCmsg& msg);
-
+		int		nick(const IRCmsg& msg);
+		int		user(const IRCmsg& msg);
+		int		pass(const IRCmsg& msg);
+		int		quit(const IRCmsg& msg);
+	
 		// channel related commands
-		int	join(const IRCmsg& msg);
-		int	privmsg(const IRCmsg& msg);
-		int	topic(const IRCmsg& msg);
-		int part(const IRCmsg& msg);
-		int mode(const IRCmsg& msg);
+		int		join(const IRCmsg& msg);
+		int		privmsg(const IRCmsg& msg);
+		int		topic(const IRCmsg& msg);
+		int 	part(const IRCmsg& msg);
+		int 	mode(const IRCmsg& msg);
+		int		invite(const IRCmsg& msg);
+		int		uninvite(const IRCmsg& msg);
 
 		// server related commands
 		int	ping(const IRCmsg& msg);
