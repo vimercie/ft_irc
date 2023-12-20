@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmajani <mmajani@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:34:05 by mmajani          ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 07:27:51 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,18 @@
 # include <errno.h>
 # include <vector>
 # include <signal.h>
+# include <map>
 
 class Channel;
 class Client;
 class IRCmsg;
 
+typedef std::map<char, bool>	modeMap;
+
 class Server
 {
 	private:
+		typedef int (Server::*cmd)(const IRCmsg& msg);
 	// server
 		std::string				name;
 	// socket
@@ -52,6 +56,8 @@ class Server
 		std::vector<Channel*>	channels;
 		std::vector<Client*>	clients;
 
+		std::map<std::string, cmd> cmds;
+
 	// methods
 
 	// server init
@@ -61,15 +67,20 @@ class Server
 		void	startListening();
 		void	initializePoll();
 
+		void	cmdsInit();
+
 		void	acceptConnections();
 		void	closeConnection(int fd);
 		void	removeClient(Client* client);
+		void	removeClients();
+		void	removeChannel(Channel* channel);
+		void	removeEmptyChannels();
 	
 	// methods
 		void	processCommands(Client* client);
 
 	// cmds
-		int	exec(const IRCmsg& msg);
+		int		exec(const IRCmsg& msg);
 
 		// user related commands
 		int		nick(const IRCmsg& msg);
@@ -93,11 +104,6 @@ class Server
 		int	privmsgToChannel(const IRCmsg& msg, Channel* channel);
 		int	privmsgToClient(const IRCmsg& msg, Client* receiver);
 
-	// errors
-		std::string	err_passwdmismatch();
-		std::string	err_unknowncommand(const IRCmsg& msg);
-		std::string	err_notregistered();
-
 	public:
 		Server(int port, const std::string& password);
 		~Server();
@@ -116,6 +122,8 @@ class Server
 		Client*					getClientByFd(int fd);
 		Client*					getClientByNickname(const std::string& nickname);
 		Channel*				getChannelByName(const std::string& name);
+
+		const modeMap&			parseModes(const IRCmsg& msg);
 };
 
 #endif

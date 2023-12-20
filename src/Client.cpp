@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:36:26 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 07:37:30 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,8 +114,5 @@ void	Client::removeChannel(Channel* channel)
 	std::vector<Channel*>::iterator it = std::find(channels.begin(), channels.end(), channel);
 
 	if (it != channels.end())
-	{
 		channels.erase(it);
-		channel->removeClient(this);
-	}
 }

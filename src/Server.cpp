@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/19 19:03:21 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 07:34:38 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ Server::Server(int port, const std::string& password) : port(port), password(pas
 	bindSocket();
 	startListening();
 	initializePoll();
+
+	cmdsInit();
 
 	name = "localhost";
 
@@ -120,6 +122,24 @@ void	Server::initializePoll()
 	nfds = 1;
 }
 
+void	Server::cmdsInit()
+{
+	cmds["NICK"] = &Server::nick;
+	cmds["USER"] = &Server::user;
+	cmds["PASS"] = &Server::pass;
+	cmds["QUIT"] = &Server::quit;
+
+	cmds["JOIN"] 	= &Server::join;
+	cmds["PRIVMSG"]	= &Server::privmsg;
+	cmds["TOPIC"] 	= &Server::topic;
+	cmds["MODE"] 	= &Server::mode;
+	cmds["PART"] 	= &Server::part;
+	cmds["INVITE"] 	= &Server::invite;
+	cmds["UNINVITE"] = &Server::uninvite;
+
+	cmds["PING"] = &Server::ping;
+}
+
 void	Server::acceptConnections()
 {
 	struct sockaddr_in	cli;
@@ -178,14 +198,48 @@ void Server::removeClient(Client* client)
 		(*it)->removeClient(client);
 
 	// Suppression du client de la liste des clients
-	clients.erase(std::remove(clients.begin(), clients.end(), client), clients.end());
 	delete client;
+	clients.erase(std::remove(clients.begin(), clients.end(), client), clients.end());
+}
+
+void Server::removeClients()
+{
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); )
+	{
+		if ((*it)->isToDisconnect())
+		{
+			removeClient(*it);
+			continue;
+		}
+		else
+			++it;
+	}
+}
+
+void Server::removeChannel(Channel* channel)
+{
+	// Suppression du canal de la liste des canaux
+	delete channel;
+	channels.erase(std::remove(channels.begin(), channels.end(), channel), channels.end());
+}
+
+void Server::removeEmptyChannels()
+{
+    for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); )
+	{
+        if ((*it)->getClients().empty())
+		{
+            delete *it;  // Supprime le canal si nécessaire
+            it = channels.erase(it);  // Supprime le pointeur du vecteur et avance l'itérateur
+        }
+		else
+            ++it;
+    }
 }
 
 void Server::serverLoop()
 {
     int 					poll_ret;
-    std::vector<Client*>	toRemove;
 
     while (status)
 	{
@@ -200,27 +254,27 @@ void Server::serverLoop()
         if (fds[0].revents & POLLIN)
             acceptConnections();
 
-		toRemove.clear();
-
         for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
 		{
-            if (!(*it)) continue; // Vérifie si le client n'est pas nul
-            
+			// Vérifie si le client n'est pas nul
+            if (!(*it))
+				continue;
+
+			// Lecture des messages entrants
             if ((*it)->getSocket().revents & POLLIN)
                 (*it)->readFromSocket();
 
+			// Traitement des commandes et génération des réponses
             processCommands(*it);
 
+			// Envoi des réponses
 			if ((*it)->getSocket().revents & POLLOUT)
             	(*it)->sendToSocket();
-
-            if ((*it)->isToDisconnect())
-                toRemove.push_back(*it);
         }
 
-        // Supprime les clients marqués pour suppression
-        for (std::vector<Client*>::iterator it = toRemove.begin(); it != toRemove.end(); ++it)
-            removeClient(*it);
+        // Supprime les clients et les channels marqués pour suppression
+        removeClients();
+		removeEmptyChannels();
     }
 }
 
