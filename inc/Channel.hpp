@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 06:06:41 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 08:00:17 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,6 @@ class Channel
 		void					sendToChannel(const std::string& msg);
 
 		void					sendInvite(Client* client);
-		void					invite(Client* client);
-		void					uninvite(Client* client);
 };
 
 #endif

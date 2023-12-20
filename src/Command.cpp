@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 12:38:54 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/20 07:44:03 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 07:59:14 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,10 @@ int	Server::topic(const IRCmsg& msg)
 		return 0;
 
 	if (!msg.getTrailing().empty())
+	{
 		channel->setTopic(msg.getTrailing());
+		std::cout << "topic of " << channel->getName() << " set to " << channel->getTopic() << std::endl;
+	}
 
 	response = IRCmsg(msg.getClient(), user_id(msg.getClient()->getNickname(), msg.getClient()->getUsername()), "TOPIC", msg.getParameters(), channel->getTopic());
 	channel->sendToChannel(response.toString());
@@ -300,10 +303,10 @@ int	Server::part(const IRCmsg& msg)
 	if (channel == NULL)
 		return 0;
 
+	channel->sendToChannel(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "PART", msg.getParameters(), msg.getTrailing()).toString());
 	channel->removeClient(msg.getClient());
 	sender->removeChannel(channel);
 
-	channel->sendToChannel(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "PART", msg.getParameters(), msg.getTrailing()).toString());
 
 	return 0;
 }
@@ -383,25 +386,27 @@ int	Server::invite(const IRCmsg& msg)
 	return 0;
 }
 
-int	Server::uninvite(const IRCmsg& msg)
+int Server::kick(const IRCmsg& msg)
 {
 	Client*		sender = msg.getClient();
-	Client*		client = getClientByNickname(msg.getParameters()[0]);
-	Channel*	channel = getChannelByName(msg.getParameters()[1]);
+	Client*		client = getClientByNickname(msg.getParameters()[1]);
+	Channel*	channel = getChannelByName(msg.getParameters()[0]);
 
 	if (client == NULL || channel == NULL)
+	{
+		std::cout << "client or channel not found" << std::endl;
 		return 0;
+	}
 
 	if (!channel->isOperator(sender))
+	{
+		std::cout << sender->getNickname() << " is not operator of channel " << channel->getName() << std::endl;
 		return 0;
+	}
 
-	// if client not invited
-	if (!channel->isInvited(client))
-		return 0;
 
-	channel->removeClient(client);
-	client->removeChannel(channel);
-
+	std::cout << "kicking " << client->getNickname() << " from channel " << channel->getName() << std::endl;
+	part(IRCmsg(client, user_id(client->getNickname(), client->getUsername()), "PART", msg.getParameters(), msg.getTrailing()));
 	return 0;
 }
 

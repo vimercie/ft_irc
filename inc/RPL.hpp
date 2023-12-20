@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 14:39:25 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/20 07:49:09 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 08:02:17 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 #define RPL_NAMREPLY(channel, names)			(":localhost 353 " + std::string(channel)	+ " = " + std::string(names) + "\r\n")
 #define RPL_ENDOFNAMES(channel)					(":localhost 366 " + std::string(channel)	+ " :End of NAMES list\r\n")
 
-#define RPL_CHANNELMODEIS(channel, mode)		(":localhost 324 " + std::string(channel)	+ " " + std::string(modes) + "\r\n")
+#define RPL_CHANNELMODEIS(channel, mode)		(":localhost 324 " + std::string(channel)	+ " " + std::string(mode) + "\r\n")
 #define RPL_CHANNELCREATED(channel, date)		(":localhost 329 " + std::string(channel)	+ " " + std::string(date) + "\r\n")
 
 #define ERR_UMODEUNKNOWNFLAG(flag)				(":localhost 501 " + std::string(flag)		+ " :Unknown MODE flag\r\n")
