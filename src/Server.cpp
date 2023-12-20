@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 16:58:14 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 18:09:07 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,12 +298,6 @@ void	Server::processCommands(Client *client)
 	}
 
     client->clearRecvBuffer(); // Effacer le buffer de réception après le traitement
-}
-
-void	Server::sendMsg(int fd, const std::string& msg)
-{
-	if (send(fd, msg.c_str(), msg.length(), 0) < 0)
-		std::cerr << "Erreur d'envoi du message." << std::endl;
 }
 
 // utils

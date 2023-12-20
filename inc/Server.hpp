@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 08:03:03 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 18:21:37 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,20 @@ class Server
 	private:
 		typedef int (Server::*cmd)(const IRCmsg& msg);
 	// server
-		std::string				name;
+		std::string					name;
 	// socket
-		int 					sockfd;
-		struct sockaddr_in		servaddr;
-		int 					port;
-		std::string 			password;
+		int 						sockfd;
+		struct sockaddr_in			servaddr;
+		int 						port;
+		std::string 				password;
 	// poll
-		struct pollfd			fds[MAX_CLIENTS + 1];
-		nfds_t 					nfds;
+		struct pollfd				fds[MAX_CLIENTS + 1];
+		nfds_t 						nfds;
 
-		std::vector<Channel*>	channels;
-		std::vector<Client*>	clients;
+		std::vector<Channel*>		channels;
+		std::vector<Client*>		clients;
 
-		std::map<std::string, cmd> cmds;
+		std::map<std::string, cmd>	cmds;
 
 	// methods
 
@@ -76,7 +76,6 @@ class Server
 		void	removeChannel(Channel* channel);
 		void	removeEmptyChannels();
 	
-	// methods
 		void	processCommands(Client* client);
 
 	// cmds
@@ -87,7 +86,6 @@ class Server
 		int		user(const IRCmsg& msg);
 		int		pass(const IRCmsg& msg);
 		int		quit(const IRCmsg& msg);
-	
 		// channel related commands
 		int		join(const IRCmsg& msg);
 		int		privmsg(const IRCmsg& msg);
@@ -98,10 +96,6 @@ class Server
 		int		kick(const IRCmsg& msg);
 		// server related commands
 		int		ping(const IRCmsg& msg);
-
-		// utils
-		int	privmsgToChannel(const IRCmsg& msg, Channel* channel);
-		int	privmsgToClient(const IRCmsg& msg, Client* receiver);
 
 	public:
 		Server(int port, const std::string& password);
@@ -114,15 +108,10 @@ class Server
 	// methods
 		void					serverLoop();
 
-		void					communicate();
-		void					sendMsg(int fd, const std::string& msg);
-
 	// utils
 		Client*					getClientByFd(int fd);
 		Client*					getClientByNickname(const std::string& nickname);
 		Channel*				getChannelByName(const std::string& name);
-
-		const modeMap&			parseModes(const IRCmsg& msg);
 };
 
 #endif

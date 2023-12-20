@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/08 18:24:34 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/18 17:38:37 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 18:08:59 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,4 @@ std::string::const_iterator	getNextWord(std::string::const_iterator& it, const s
     buffer = std::string(start, it);
 
 	return it;
-}
-
-void	sendMsg(int fd, const std::string& msg)
-{
-	ssize_t	bytes_sent;
-
-	bytes_sent = send(fd, msg.c_str(), msg.length(), 0);
-
-	if (bytes_sent == -1)
-		std::cerr << "Erreur d'envoi du message" << std::endl;
 }
