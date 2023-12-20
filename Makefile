@@ -1,14 +1,31 @@
 NAME=		ircserv
 
-VPATH=		src/
+VPATH=		src/					\
+			src/Commands/			\
+			src/Commands/Server/	\
+			src/Commands/Channel/	\
+			src/Commands/Client/
 
 SRC=		main.cpp		\
 			Server.cpp		\
 			Client.cpp		\
 			Channel.cpp		\
 			IRCmsg.cpp		\
-			Command.cpp		\
-			Utils.cpp
+			Utils.cpp		\
+			Exec.cpp		\
+			Nick.cpp		\
+			User.cpp		\
+			Pass.cpp		\
+			Privmsg.cpp		\
+			Quit.cpp		\
+			Join.cpp		\
+			Part.cpp		\
+			Mode.cpp		\
+			Topic.cpp		\
+			Kick.cpp		\
+			Invite.cpp		\
+			Ping.cpp		\
+
 
 INCDIR=		inc/
 

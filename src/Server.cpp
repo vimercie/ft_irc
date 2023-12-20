@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 08:02:58 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 16:58:14 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,9 @@ void Server::removeChannel(Channel* channel)
 
 void Server::removeEmptyChannels()
 {
+	if (channels.empty())
+		return;
+
     for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); )
 	{
         if ((*it)->getClients().empty())
@@ -238,7 +241,7 @@ void Server::removeEmptyChannels()
 
 void Server::serverLoop()
 {
-    int 					poll_ret;
+    int poll_ret;
 
     while (status)
 	{

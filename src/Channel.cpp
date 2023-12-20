@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 07:59:43 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 17:06:09 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ Channel::~Channel() {std::cout << "Channel " + name + " destroyed" << std::endl;
 
 // getters
 std::string	Channel::getName(void) const {return name;}
-std::vector<Client*>	Channel::getClients(void) const {return clients;}
+const std::vector<Client*>& Channel::getClients() const { return clients; }
 std::string	Channel::getTopic(void) const {return topic;}
 std::string		Channel::getKey(void) const {return key;}
 unsigned int	Channel::getLimit(void) const {return limit;}
@@ -136,6 +136,7 @@ void	Channel::sendToChannel(const std::string& msg)
 		client->appendToSendBuffer(msg);
 	}
 }
+
 void	Channel::sendInvite(Client* client)
 {
 	if (isInvited(client))

@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:07:43 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 08:00:17 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/20 17:09:29 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,18 +49,18 @@ class Channel
 		~Channel();
 
 	// getters
-		std::string				getName(void) const;
-		std::string				getNamesList(void);
-		std::vector<Client*>	getClients(void) const;
-		std::vector<Client*>	getOperators(void) const;
-		std::string				getTopic(void) const;
-		std::string				getKey(void) const;
-		bool					getMode(char mode) const;
-		std::string				getModes(void) const;
-		unsigned int			getLimit(void) const;
+		std::string					getName(void) const;
+		std::string					getNamesList(void);
+		const std::vector<Client*>&	getClients(void) const;
+		const std::vector<Client*>&	getOperators(void) const;
+		std::string					getTopic(void) const;
+		std::string					getKey(void) const;
+		bool						getMode(char mode) const;
+		std::string					getModes(void) const;
+		unsigned int				getLimit(void) const;
 
-		bool					isOperator(Client* client) const;
-		bool					isInvited(Client* client) const;
+		bool						isOperator(Client* client) const;
+		bool						isInvited(Client* client) const;
 
 	// setters
 		void					setName(const std::string& name);
