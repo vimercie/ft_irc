@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/21 11:08:39 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/21 12:54:16 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,9 +92,10 @@ void	Server::configureServerAddress()
 
 void	Server::bindSocket()
 {
-	if (bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0)
+	if ((bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr))) != 0)
 	{
-		std::cerr << "Erreur de liaison du socket" << std::endl;
+		std::cerr << "Erreur de bind" << std::endl;
+		delete this;
 		exit(1);
 	}
 }
