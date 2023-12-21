@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:22:54 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 18:01:55 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/21 12:10:30 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,19 @@ int	Server::join(const IRCmsg& msg)
 		return 0;
 	}
 	//if channel is password protected
-	if (channel->getMode('k') && channel->getKey() != msg.getParameters()[1])
+	if (channel->getMode('k'))
 	{
-		sender->appendToSendBuffer(ERR_BADCHANNELKEY(channel->getName()));
-		return 0;
+		if (msg.getParameters().size() < 2)
+		{
+			sender->appendToSendBuffer(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "475", msg.getParameters(), "Password required").toString());
+			return 0;
+		}
+
+		if (msg.getParameters()[1] != channel->getKey())
+		{
+			sender->appendToSendBuffer(ERR_BADCHANNELKEY(channel->getName()));
+			return 0;
+		}
 	}
 
 	channel->addClient(sender);

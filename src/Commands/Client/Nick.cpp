@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:16:55 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 18:00:52 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/21 10:54:28 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,26 @@
 // user related commands
 int	Server::nick(const IRCmsg& msg)
 {
-	Client	*client = msg.getClient();
+	Client		*client = msg.getClient();
+	std::string	forbiddenChars = "[]\\`_^{|}";
+
+	// Si le nickname est déjà prit
+	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		if ((*it)->getNickname() == msg.getParameters()[0])
+		{
+			client->appendToSendBuffer(ERR_NICKNAMEINUSE(msg.getParameters()[0]));
+			client->setToDisconnect(true);
+			return 1;
+		}
+	}
+
+	if (msg.getParameters()[0].find_first_of(forbiddenChars) != std::string::npos)
+	{
+		client->appendToSendBuffer(ERR_ERRONEUSNICKNAME(msg.getParameters()[0]));
+		client->setToDisconnect(true);
+		return 1;
+	}
 
 	if (!client->isAuthenticated())
 	{

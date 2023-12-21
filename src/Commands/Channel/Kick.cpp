@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:30:12 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 18:01:47 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/21 11:16:49 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int Server::kick(const IRCmsg& msg)
 
 	std::cout << "kicking " << client->getNickname() << " from channel " << channel->getName() << std::endl;
 
-	client->setToDisconnect(true);
+	channel->sendToChannel(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "KICK", msg.getParameters(), msg.getTrailing()).toString());
 
 	return 0;
 }

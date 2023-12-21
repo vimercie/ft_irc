@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 17:00:49 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/21 12:18:47 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,9 @@ int	Client::readFromSocket()
 	memset(buffer, 0, BUFFER_SIZE + 1);
 	recvBuffer.clear();
 
-	bytes_read = recv(socket->fd, buffer, BUFFER_SIZE, MSG_DONTWAIT);
+	bytes_read = recv(socket->fd, buffer, BUFFER_SIZE, 0);
 
-	if (bytes_read < 0 && errno != EAGAIN)
-		return -1;
-	else if (bytes_read == 0)
+	if (bytes_read <= 0)
 	{
 		setToDisconnect(true);
 		return 1;
@@ -94,7 +92,7 @@ int	Client::sendToSocket()
 
 	for (std::vector<std::string>::iterator it = sendBuffer.begin(); it != sendBuffer.end(); it++)
 	{
-		if (send(socket->fd, it->c_str(), it->length(), MSG_DONTWAIT) < 0)
+		if (send(socket->fd, it->c_str(), it->length(), 0) < 0)
 			return -1;
 	}
 

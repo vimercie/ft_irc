@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:30:49 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 18:01:45 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/21 12:00:40 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,14 @@ int	Server::mode(const IRCmsg& msg)
 
 	if (channel == NULL)
 	{
-		sender->appendToSendBuffer(ERR_NOSUCHCHANNEL(msg.getParameters()[0]));
+		if (getClientByNickname(params[0]) == NULL)
+			sender->appendToSendBuffer(ERR_NOSUCHCHANNEL(msg.getParameters()[0]));
 		return 0;
 	}
 
 	if (params.size() == 1)
 	{
-		sender->appendToSendBuffer(RPL_CHANNELMODEIS(channel->getName(), channel->getModes()));
+		sender->appendToSendBuffer(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "MODE", params, channel->getModes()).toString());
 		return 0;
 	}
 
@@ -59,25 +60,42 @@ int	Server::mode(const IRCmsg& msg)
 					sender->appendToSendBuffer(ERR_CHANOPRIVSNEEDED(channel->getName()));
 					return 0;
 				}
+
 				if (param.length() > 2)
 				{
 					sender->appendToSendBuffer(NOTICE("localhost", params[0], "Modes with parameters can only be set one at a time."));
 					return 0;
 				}
+
 				if (param[i] == 'o')
 				{
-					Client* client = getClientByNickname(params[1]);
-
-					if (client == NULL)
+					if (params.size() < 3)
+					{
+						sender->appendToSendBuffer(ERR_NEEDMOREPARAMS("MODE"));
 						return 0;
+					}
+
+					Client* target = getClientByNickname(params[1]);
+
+					if (target == NULL)
+					{
+						sender->appendToSendBuffer(ERR_NOSUCHNICK(params[1]));
+						return 0;
+					}
 
 					if (modeSet)
-						channel->addOperator(client);
+						channel->addOperator(target);
 					else
-						channel->removeOperator(client);
+						channel->removeOperator(target);
 				}
 				else if (param[i] == 'l')
 				{
+					if (params.size() < 3)
+					{
+						sender->appendToSendBuffer(ERR_NEEDMOREPARAMS("MODE"));
+						return 0;
+					}
+
 					if (modeSet)
 					{
 						channel->setMode(param[i], modeSet);
@@ -91,6 +109,14 @@ int	Server::mode(const IRCmsg& msg)
 				}
 				else if (param[i] == 'k')
 				{
+					msg.displayMessage();
+
+					if (params.size() < 3)
+					{
+						sender->appendToSendBuffer(NOTICE("localhost", params[0], "You must specify a key."));
+						return 0;
+					}
+
 					if (modeSet)
 					{
 						channel->setMode(param[i], modeSet);

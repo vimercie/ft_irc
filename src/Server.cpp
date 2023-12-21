@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 19:13:10 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/21 11:08:39 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,7 @@ void	Server::cmdsInit()
 	cmds["TOPIC"] 	= &Server::topic;
 	cmds["MODE"] 	= &Server::mode;
 	cmds["PART"] 	= &Server::part;
+	cmds["KICK"] 	= &Server::kick;
 	cmds["INVITE"] 	= &Server::invite;
 
 	cmds["PING"] = &Server::ping;

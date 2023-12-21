@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 14:39:25 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/20 08:02:17 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/21 11:41:31 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 #define RPL_NAMREPLY(channel, names)			(":localhost 353 " + std::string(channel)	+ " = " + std::string(names) + "\r\n")
 #define RPL_ENDOFNAMES(channel)					(":localhost 366 " + std::string(channel)	+ " :End of NAMES list\r\n")
 
-#define RPL_CHANNELMODEIS(channel, mode)		(":localhost 324 " + std::string(channel)	+ " " + std::string(mode) + "\r\n")
+#define RPL_CHANNELMODEIS(channel, mode)		(":localhost MODE " + std::string(channel)	+ " " + std::string(mode) + "\r\n")
 #define RPL_CHANNELCREATED(channel, date)		(":localhost 329 " + std::string(channel)	+ " " + std::string(date) + "\r\n")
 
 #define ERR_UMODEUNKNOWNFLAG(flag)				(":localhost 501 " + std::string(flag)		+ " :Unknown MODE flag\r\n")
@@ -45,5 +45,7 @@
 #define	ERR_NOSUCHCHANNEL(channel)				(":localhost 403 " + std::string(channel)	+ " :No such channel\r\n")
 #define	ERR_NEEDMOREPARAMS(command)				(":localhost 461 " + std::string(command)	+ " :Not enough parameters\r\n")
 #define	ERR_PASSWDMISMATCH()					(":localhost 464 * :Password incorrect\r\n")
+#define ERR_ERRONEUSNICKNAME(nickname)			(":localhost 432 " + std::string(nickname)	+ " :Erroneus nickname\r\n")
+#define ERR_NICKNAMEINUSE(nickname)				(":localhost 433 " + std::string(nickname)	+ " :Nickname is already in use\r\n")
 
 #define RPL_INVITING(nickname, channel)			(":localhost 341 " + std::string(nickname)	+ " " + std::string(channel) + "\r\n")
