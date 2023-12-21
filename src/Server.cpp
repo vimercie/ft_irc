@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/21 12:54:16 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/21 12:56:21 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ void	Server::createSocket()
 	if (sockfd == -1)
 	{
 		std::cerr << "Erreur de création du socket" << std::endl;
+		delete this;
 		exit(1);
 	}
 
@@ -105,6 +106,7 @@ void	Server::startListening()
 	if (listen(sockfd, 5) != 0)
 	{
 		std::cerr << "Erreur lors de la mise en écoute" << std::endl;
+		delete this;
 		exit(1);
 	}
 }
