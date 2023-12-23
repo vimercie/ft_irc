@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/21 12:56:21 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/23 16:07:31 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,7 +198,10 @@ void Server::removeClient(Client* client)
 	// Suppression du client des canaux
 	std::vector<Channel*> channelsCopy = client->getChannels();
 	for (std::vector<Channel*>::iterator it = channelsCopy.begin(); it != channelsCopy.end(); it++)
+	{
+		(*it)->sendToChannel(":" + client->getNickname() + " QUIT :Ciao");
 		(*it)->removeClient(client);
+	}
 
 	// Suppression du client de la liste des clients
 	delete client;
@@ -297,7 +300,7 @@ void	Server::processCommands(Client *client)
 
 		IRCmsg msg(client, *it);
 
-		if (exec(msg) != 0)
+		if (exec(msg) != 0 || client->isToDisconnect())
 			break;
 	}
 

@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:13:05 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/18 21:01:27 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/23 16:27:00 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,9 @@ class	Client
 		int		readFromSocket();
 		int		sendToSocket();
 
-		void	appendToRecvBuffer(const std::string& data);
-		void	appendToSendBuffer(const std::string& data);
-		void	appendToTmpBuffer(const std::string& data);
+		int		appendToRecvBuffer(const std::string& data);
+		int		appendToSendBuffer(const std::string& data);
+		int		appendToTmpBuffer(const std::string& data);
 		void	clearRecvBuffer();
 		void	clearSendBuffer();
 		void	clearTmpBuffer();

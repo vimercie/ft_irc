@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:24:06 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/20 18:38:16 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/23 16:29:52 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,15 @@
 
 int privmsgToClient(const IRCmsg& msg, Client* recipient)
 {
-	const Client* sender = msg.getClient();
+	Client* sender = msg.getClient();
+
+	if (!sender || !recipient)
+		return 0;
 
 	IRCmsg response;
-	response.setClient(recipient);
+	response.setClient(sender);
 	response.setPrefix(user_id(sender->getNickname(), sender->getUsername()));
-	response.setCommand("PRIVMSG");
+	response.setCommand(msg.getCommand());
 	response.setParameters(std::vector<std::string>(1, recipient->getNickname()));
 	response.setTrailing(msg.getTrailing());
 
@@ -60,10 +63,20 @@ int privmsgToChannel(const IRCmsg& msg, Channel* channel)
 int Server::privmsg(const IRCmsg& msg)
 {
 	Client				*sender = msg.getClient();
-	const std::string	recipient = msg.getParameters()[0];
 
 	if (!sender)
 		return 0;
+
+	if (msg.getParameters().empty())
+		return sender->appendToSendBuffer(ERR_NORECIPIENT("PRIVMSG"));
+
+	if (msg.getParameters().size() > 1)
+		return sender->appendToSendBuffer(ERR_TOOMANYTARGETS("PRIVMSG"));
+
+	if (msg.getTrailing().empty())
+		return sender->appendToSendBuffer(ERR_NOTEXTTOSEND());
+
+	const std::string	recipient = msg.getParameters()[0];
 
 	if (recipient[0] != '#')
 	{
@@ -76,10 +89,7 @@ int Server::privmsg(const IRCmsg& msg)
 	Channel* channel = getChannelByName(recipient);
 
 	if (!channel)
-	{
-		sender->appendToSendBuffer(ERR_NOSUCHNICK(recipient));
-		return 0;
-	}
+		return sender->appendToSendBuffer(ERR_NOSUCHNICK(recipient));
 
 	IRCmsg response(msg);
 	response.setPrefix(user_id(sender->getNickname(), sender->getUsername()));

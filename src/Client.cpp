@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 20:12:56 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/21 12:18:47 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/23 16:26:28 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "../inc/IRCmsg.hpp"
 #include "../inc/Utils.hpp"
 
-Client::Client(pollfd	*socket) : socket(socket), pass(false), toDisconnect(false) {std::cout << "Client created (fd: " << socket->fd << ")" << std::endl;}
+Client::Client(pollfd	*socket) : socket(socket), nickname("unknown"), pass(false), toDisconnect(false) {std::cout << "Client created (fd: " << socket->fd << ")" << std::endl;}
 
 Client::~Client() {std::cout << "Client destroyed" << std::endl;}
 
@@ -101,9 +101,21 @@ int	Client::sendToSocket()
 	return 0;
 }
 
-void	Client::appendToRecvBuffer(const std::string& msg) {recvBuffer.push_back(msg);}
-void	Client::appendToSendBuffer(const std::string& msg) {sendBuffer.push_back(msg);}
-void	Client::appendToTmpBuffer(const std::string& msg) {tmpBuffer += msg;}
+int	Client::appendToRecvBuffer(const std::string& msg)
+{
+	recvBuffer.push_back(msg);
+	return 0;
+}
+int	Client::appendToSendBuffer(const std::string& msg)
+{
+	sendBuffer.push_back(msg);
+	return 0;
+}
+int	Client::appendToTmpBuffer(const std::string& msg)
+{
+	tmpBuffer += msg;
+	return 0;
+}
 
 void	Client::clearRecvBuffer() {recvBuffer.clear();}
 void	Client::clearSendBuffer() {sendBuffer.clear();}

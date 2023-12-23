@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:30:49 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/21 12:00:40 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/23 17:15:03 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,21 @@ int	Server::mode(const IRCmsg& msg)
 	const std::vector<std::string>&	params = msg.getParameters();
 	const std::string				validModes = "iotkl";
 
+	if (params.size() < 1)
+		return sender->appendToSendBuffer(ERR_NEEDMOREPARAMS(msg.getCommand()));
+
+	if (sender == NULL)
+		return 0;
+
 	if (channel == NULL)
 	{
-		if (getClientByNickname(params[0]) == NULL)
-			sender->appendToSendBuffer(ERR_NOSUCHCHANNEL(msg.getParameters()[0]));
-		return 0;
+		if (params[0] != sender->getNickname())
+			return sender->appendToSendBuffer(ERR_NOSUCHCHANNEL(params[0]));
+		return (0);
 	}
 
 	if (params.size() == 1)
-	{
-		sender->appendToSendBuffer(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "MODE", params, channel->getModes()).toString());
-		return 0;
-	}
+		return sender->appendToSendBuffer(RPL_CHANNELMODEIS(sender->getNickname(), channel->getName(), channel->getModes()));
 
 	for (std::vector<std::string>::const_iterator it = params.begin(); it != params.end(); ++it)
 	{

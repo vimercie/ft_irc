@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:30:12 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/21 11:16:49 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/23 16:42:18 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,24 @@
 
 int Server::kick(const IRCmsg& msg)
 {
+	if (msg.getParameters().size() < 2)
+	{
+		msg.getClient()->appendToSendBuffer(ERR_NEEDMOREPARAMS(msg.getCommand()));
+		return 0;
+	}
+
 	Channel*	channel = getChannelByName(msg.getParameters()[0]);
 	Client*		client = getClientByNickname(msg.getParameters()[1]);
 	Client*		sender = msg.getClient();
 
-	if (client == NULL || channel == NULL)
-	{
-		std::cout << "client or channel not found" << std::endl;
-		return 0;
-	}
+	if (channel == NULL)
+		return sender->appendToSendBuffer(ERR_NOSUCHCHANNEL(msg.getParameters()[0]));
+	
+	if (client == NULL)
+		return sender->appendToSendBuffer(ERR_NOSUCHNICK(msg.getParameters()[1]));
 
 	if (!channel->isOperator(sender))
-	{
-		std::cout << sender->getNickname() << " is not operator of channel " << channel->getName() << std::endl;
-		return 0;
-	}
+		return sender->appendToSendBuffer(ERR_CHANOPRIVSNEEDED(channel->getName()));
 
 	std::cout << "kicking " << client->getNickname() << " from channel " << channel->getName() << std::endl;
 
