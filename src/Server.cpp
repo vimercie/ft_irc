@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/24 16:50:29 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/24 18:13:34 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,7 @@ void	Server::cmdsInit()
 	cmds["INVITE"] 	= &Server::invite;
 
 	cmds["PING"] = &Server::ping;
+	cmds["WHOIS"] = &Server::whois;
 }
 
 void	Server::acceptConnections()

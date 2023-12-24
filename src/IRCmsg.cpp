@@ -25,15 +25,15 @@ IRCmsg::IRCmsg(Client* client, const std::string& prefix, const std::string& com
 	this->client = client;
 
 	if (!prefix.empty())
-		this->prefix = prefix;
+		setPrefix(prefix);
 
-	this->command = command;
+	setCommand(command);
 
 	if (!parameters.empty())
-	this->parameters = parameters;
+	setParameters(parameters);
 
 	if (!trailing.empty())
-		this->trailing = trailing;
+		setTrailing(trailing);
 }
 
 IRCmsg::IRCmsg(const IRCmsg& other)
@@ -75,7 +75,13 @@ void IRCmsg::setPrefix(const std::string& prefix)
 }
 void IRCmsg::setCommand(const std::string& command) {this->command = command;}
 void IRCmsg::setParameters(const std::vector<std::string>& parameters) {this->parameters = parameters;}
-void IRCmsg::setTrailing(const std::string& trailing) {this->trailing = trailing;}
+void IRCmsg::setTrailing(const std::string& trailing)
+{
+	if (trailing[0] == ':')
+		this->trailing = trailing.substr(1);
+	else
+		this->trailing = trailing;
+}
 void IRCmsg::setClient(Client* client) {this->client = client;}
 
 
@@ -113,7 +119,7 @@ std::string IRCmsg::toString() const
 	}
 
 	if (!trailing.empty())
-		message += " " + trailing;
+		message += " :" + trailing;
 
 	message += "\r\n";
 

@@ -24,7 +24,8 @@ SRC=		main.cpp		\
 			Topic.cpp		\
 			Kick.cpp		\
 			Invite.cpp		\
-			Ping.cpp
+			Ping.cpp		\
+			Whois.cpp
 
 
 INCDIR=		inc/

@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/24 17:58:45 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/24 18:10:49 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ class Server
 		int		kick(const IRCmsg& msg);
 		// server related commands
 		int		ping(const IRCmsg& msg);
+		int		whois(const IRCmsg& msg);
 
 		// utils
 		std::string	getValidNickname(const std::string& nickname, Client* client);
