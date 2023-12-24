@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/24 18:11:24 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/24 18:28:40 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/24 18:44:49 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,13 @@ int	Server::whois(const IRCmsg& msg)
 	if (params.size() < 1)
 		return sender->appendToSendBuffer(ERR_NONICKNAMEGIVEN());
 
-	Client* target = getClientByNickname(params[0]);
+	Client* client = getClientByNickname(params[0]);
 
-	if (target == NULL)
-		return sender->appendToSendBuffer(ERR_NOSUCHNICK(params[0]));
+	if (client != NULL)
+	{
+		sender->appendToSendBuffer(RPL_WHOISUSER(client->getNickname(), client->getUsername(), client->getHostname(), client->getRealname()));
+		return sender->appendToSendBuffer(RPL_ENDOFWHOIS(client->getNickname()));
+	}
 
-	sender->appendToSendBuffer(rpl_whoisuser(target->getNickname(), target->getUsername(), target->getHostname(), target->getRealname()));
-	sender->appendToSendBuffer(RPL_ENDOFWHOIS(target->getNickname()));
-
-	return 0;
+	return sender->appendToSendBuffer(ERR_NOSUCHNICK(params[0]));
 }
