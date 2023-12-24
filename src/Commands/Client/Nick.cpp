@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:16:55 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/23 16:32:00 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/24 18:03:29 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,23 @@ int	Server::nick(const IRCmsg& msg)
 		return client->appendToSendBuffer(ERR_ERRONEUSNICKNAME(msg.getParameters()[0]));
 
 	// Si le nickname est déjà prit
-	for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
-	{
-		if ((*it)->getNickname() == msg.getParameters()[0])
-			return client->appendToSendBuffer(ERR_NICKNAMEINUSE(msg.getParameters()[0]));
-	}
-
-	client->setNickname(msg.getParameters()[0]);
+	client->setNickname(getValidNickname(msg.getParameters()[0], client));
 
 	return client->appendToSendBuffer(RPL_WELCOME(client->getNickname()));
+}
+
+std::string	Server::getValidNickname(const std::string& nickname, Client* client)
+{
+	std::ostringstream				res(nickname);
+	Client*							tmp = getClientByNickname(res.str());
+	short							i = 1;
+	while (tmp != NULL && tmp != client)
+	{
+		res.str("");
+		res << nickname << i;
+		tmp = getClientByNickname(res.str());
+		i++;
+	}
+
+	return res.str();
 }

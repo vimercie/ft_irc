@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/23 16:07:31 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/24 16:50:29 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ Server::~Server()
 
 	std::cout << "Server destroyed" << std::endl;
 }
+
 
 // getters
 const std::vector<Client*>&		Server::getClients() const {return clients;}
@@ -234,62 +235,62 @@ void Server::removeEmptyChannels()
 	if (channels.empty())
 		return;
 
-    for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); )
+	for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); )
 	{
-        if ((*it)->getClients().empty())
+		if ((*it)->getClients().empty())
 		{
-            delete *it;  // Supprime le canal si nécessaire
-            it = channels.erase(it);  // Supprime le pointeur du vecteur et avance l'itérateur
-        }
+			delete *it;  // Supprime le canal si nécessaire
+			it = channels.erase(it);  // Supprime le pointeur du vecteur et avance l'itérateur
+		}
 		else
-            ++it;
-    }
+			++it;
+	}
 }
 
 void Server::serverLoop()
 {
-    int poll_ret;
+	int poll_ret;
 
-    while (status)
+	while (status)
 	{
-        poll_ret = poll(fds, nfds, 0);
+		poll_ret = poll(fds, nfds, 0);
 
-        if (poll_ret < 0 && status == 1)
+		if (poll_ret < 0 && status == 1)
 		{
-            std::cerr << "Erreur de poll" << std::endl;
-            break;
-        }
+			std::cerr << "Erreur de poll" << std::endl;
+			break;
+		}
 
-        if (fds[0].revents & POLLIN)
-            acceptConnections();
+		if (fds[0].revents & POLLIN)
+			acceptConnections();
 
-        for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+		for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
 		{
 			// Vérifie si le client n'est pas nul
-            if (!(*it))
+			if (!(*it))
 				continue;
 
 			// Lecture des messages entrants
-            if ((*it)->getSocket().revents & POLLIN)
-                (*it)->readFromSocket();
+			if ((*it)->getSocket().revents & POLLIN)
+				(*it)->readFromSocket();
 
 			// Traitement des commandes et génération des réponses
-            processCommands(*it);
+			processCommands(*it);
 
 			// Envoi des réponses
 			if ((*it)->getSocket().revents & POLLOUT)
-            	(*it)->sendToSocket();
-        }
+				(*it)->sendToSocket();
+		}
 
-        // Supprime les clients et les channels marqués pour suppression
-        removeClients();
+		// Supprime les clients et les channels marqués pour suppression
+		removeClients();
 		removeEmptyChannels();
-    }
+	}
 }
 
 void	Server::processCommands(Client *client)
 {
-    std::vector<std::string>	recvData = client->getRecvBuffer();
+	std::vector<std::string>	recvData = client->getRecvBuffer();
 
 	if (recvData.empty())
 		return;
@@ -304,7 +305,7 @@ void	Server::processCommands(Client *client)
 			break;
 	}
 
-    client->clearRecvBuffer(); // Effacer le buffer de réception après le traitement
+	client->clearRecvBuffer(); // Effacer le buffer de réception après le traitement
 }
 
 // utils

@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/21 12:50:33 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/24 17:58:45 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # define MAX_CLIENTS 10
 
 # include <iostream>
+# include <sstream>
 # include <string>
 # include <sys/types.h>
 # include <sys/socket.h>
@@ -96,6 +97,9 @@ class Server
 		int		kick(const IRCmsg& msg);
 		// server related commands
 		int		ping(const IRCmsg& msg);
+
+		// utils
+		std::string	getValidNickname(const std::string& nickname, Client* client);
 
 	public:
 		Server(int port, const std::string& password);
