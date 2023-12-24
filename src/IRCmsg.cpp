@@ -111,6 +111,7 @@ std::string IRCmsg::toString() const
 
 	if (!parameters.empty())
 		message += " ";
+
 	for (std::vector<std::string>::const_iterator it = parameters.begin(); it != parameters.end(); it++)
 	{
 		message += *it;

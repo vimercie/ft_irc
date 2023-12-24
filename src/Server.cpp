@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/24 18:13:34 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/24 18:31:39 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,10 +128,10 @@ void	Server::initializePoll()
 
 void	Server::cmdsInit()
 {
-	cmds["NICK"] = &Server::nick;
-	cmds["USER"] = &Server::user;
-	cmds["PASS"] = &Server::pass;
-	cmds["QUIT"] = &Server::quit;
+	cmds["NICK"]	= &Server::nick;
+	cmds["USER"]	= &Server::user;
+	cmds["PASS"]	= &Server::pass;
+	cmds["QUIT"]	= &Server::quit;
 
 	cmds["JOIN"] 	= &Server::join;
 	cmds["PRIVMSG"]	= &Server::privmsg;
@@ -141,8 +141,8 @@ void	Server::cmdsInit()
 	cmds["KICK"] 	= &Server::kick;
 	cmds["INVITE"] 	= &Server::invite;
 
-	cmds["PING"] = &Server::ping;
-	cmds["WHOIS"] = &Server::whois;
+	cmds["PING"]	= &Server::ping;
+	cmds["WHOIS"]	= &Server::whois;
 }
 
 void	Server::acceptConnections()
