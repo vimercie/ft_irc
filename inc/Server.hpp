@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/23 11:35:42 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/24 18:10:49 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/25 03:57:03 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,11 @@ class Server
 
 		// utils
 		std::string	getValidNickname(const std::string& nickname, Client* client);
+		int			modeI(Channel* channel, Client* sender, const std::string& param, bool modeSet);
+		int			modeO(Channel* channel, Client* sender, const std::string& param, bool modeSet);
+		int			modeT(Channel* channel, Client* sender, const std::string& param, bool modeSet);
+		int			modeK(Channel* channel, Client* sender, const std::string& param, bool modeSet);
+		int			modeL(Channel* channel, Client* sender, const std::string& param, bool modeSet);
 
 	public:
 		Server(int port, const std::string& password);

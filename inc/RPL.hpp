@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 14:39:25 by mmajani           #+#    #+#             */
-/*   Updated: 2023/12/24 18:12:09 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/25 05:07:30 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 #define RPL_CHANNELCREATED(channel, date)						(":localhost 329 " + std::string(channel)	+ " " + std::string(date) + "\r\n")
 #define RPL_NOTOPIC(channel)									(":localhost 331 " + std::string(channel)	+ " :No topic is set\r\n")
 #define RPL_TOPIC(client, channel, topic)						(":localhost 332 " + std::string(client)	+ " " + std::string(channel) + " :" + std::string(topic) + "\r\n")
-#define RPL_INVITING(nickname, channel)							(":localhost 341 " + std::string(nickname)	+ " " + std::string(channel) + "\r\n")
+#define RPL_INVITING(sender, target, channel)					(":localhost 341 " + std::string(sender)	+ " " + std::string(target) + " " + std::string(channel) + "\r\n")
 #define RPL_NAMREPLY(channel, names)							(":localhost 353 " + std::string(channel)	+ " = " + std::string(names) + "\r\n")
 #define RPL_ENDOFNAMES(channel)									(":localhost 366 " + std::string(channel)	+ " :End of NAMES list\r\n")
 

@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:30:12 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/23 16:42:18 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/25 04:42:14 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,13 @@
 
 int Server::kick(const IRCmsg& msg)
 {
+	Client*		sender = msg.getClient();
+
 	if (msg.getParameters().size() < 2)
-	{
-		msg.getClient()->appendToSendBuffer(ERR_NEEDMOREPARAMS(msg.getCommand()));
-		return 0;
-	}
+		return sender->appendToSendBuffer(ERR_NEEDMOREPARAMS(msg.getCommand()));
 
 	Channel*	channel = getChannelByName(msg.getParameters()[0]);
 	Client*		client = getClientByNickname(msg.getParameters()[1]);
-	Client*		sender = msg.getClient();
 
 	if (channel == NULL)
 		return sender->appendToSendBuffer(ERR_NOSUCHCHANNEL(msg.getParameters()[0]));

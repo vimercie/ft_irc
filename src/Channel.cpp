@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 00:08:59 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/24 16:20:00 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/25 04:59:38 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ Channel::Channel(const std::string& name) : name(name)
 
 	if (name[0] != '#')
 		this->name = "#" + this->name;
-	
-	std::cout << "Channel " + this->name + " created" << std::endl;
+
+
 	//set modes
 	modes['i'] = false;
 	modes['t'] = true;
@@ -31,6 +31,8 @@ Channel::Channel(const std::string& name) : name(name)
 	modes['l'] = false;
 	limit = 0;
 	key = "";
+
+	std::cout << "Channel " + this->name + " created" << std::endl;
 }
 
 Channel::~Channel() {std::cout << "Channel " + name + " destroyed" << std::endl;}
@@ -113,6 +115,7 @@ void	Channel::removeOperator(Client* client)
 	// if not operator
 	if (!isOperator(client))
 		return;
+
 	std::vector<Client*>::iterator it = std::find(operators.begin(), operators.end(), client);
 
 	if (it != operators.end())
@@ -141,5 +144,6 @@ void	Channel::sendInvite(Client* client)
 {
 	if (isInvited(client))
 		return;
+
 	invited.push_back(client);
 }

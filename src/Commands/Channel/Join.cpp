@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:22:54 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/23 16:39:51 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/25 05:13:19 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,12 @@
 
 int	Server::join(const IRCmsg& msg)
 {
-	Channel*	channel= getChannelByName(msg.getParameters()[0]);
 	Client*		sender = msg.getClient();
+
+	if (msg.getParameters().empty())
+		return sender->appendToSendBuffer(ERR_NEEDMOREPARAMS("JOIN"));
+
+	Channel*	channel= getChannelByName(msg.getParameters()[0]);
 
 	if (channel == NULL)
 	{
@@ -29,7 +33,7 @@ int	Server::join(const IRCmsg& msg)
 	}
 
 	//if channel limit reached
-	if (channel->getLimit() != 0 && channel->getClients().size() + 1 > channel->getLimit())
+	if (channel->getMode('l') && channel->getClients().size() >= channel->getLimit())
 		return sender->appendToSendBuffer(ERR_CHANNELISFULL(channel->getName()));
 
 	//if channel is invite only
@@ -40,13 +44,15 @@ int	Server::join(const IRCmsg& msg)
 	if (channel->getMode('k'))
 	{
 		if (msg.getParameters().size() < 2)
-			return sender->appendToSendBuffer(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), "475", msg.getParameters(), "Password required").toString());
+			return sender->appendToSendBuffer(ERR_NEEDMOREPARAMS("JOIN"));
 
 		if (msg.getParameters()[1] != channel->getKey())
 			return sender->appendToSendBuffer(ERR_BADCHANNELKEY(channel->getName()));
 	}
 
 	channel->addClient(sender);
+
+	channel->sendToChannel(IRCmsg(sender, user_id(sender->getNickname(), sender->getUsername()), msg.getCommand(), msg.getParameters(), msg.getTrailing()).toString());
 
 	if (channel->getTopic().empty())
 		return sender->appendToSendBuffer(RPL_NOTOPIC(channel->getName()));

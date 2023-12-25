@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:16:55 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/24 18:35:01 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/25 05:15:51 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 int	Server::nick(const IRCmsg& msg)
 {
 	Client		*client = msg.getClient();
-	std::string	forbiddenChars = "[]\\`^{|}.,!?";
+	std::string	forbiddenChars = "\\`{|}.,!?";
 
 	// Si il n'y a pas de paramètre
 	if (msg.getParameters().empty())
@@ -33,7 +33,7 @@ int	Server::nick(const IRCmsg& msg)
 	if (msg.getParameters()[0].find_first_of(forbiddenChars) != std::string::npos)
 		return client->appendToSendBuffer(ERR_ERRONEUSNICKNAME(msg.getParameters()[0]));
 
-	// Si le nickname est déjà prit
+	// Si le nickname est déjà prit, on incrémente un chiffre à la fin
 	client->setNickname(getValidNickname(msg.getParameters()[0], client));
 
 	return client->appendToSendBuffer(RPL_WELCOME(client->getNickname()));
