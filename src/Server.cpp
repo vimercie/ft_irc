@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:36 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/24 18:31:39 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/26 11:52:19 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,16 @@ void statusHandler(int sig);
 
 Server::Server(int port, const std::string& password) : port(port), password(password)
 {
+	sockfd = -1;
+
 	std::cout << "Server created" << std::endl;
+
+	if (port < 1024 || port > 65535)
+	{
+		std::cerr << "Port invalide" << std::endl;
+		delete this;
+		exit(1);
+	}
 
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, statusHandler);
@@ -42,7 +51,8 @@ Server::Server(int port, const std::string& password) : port(port), password(pas
 Server::~Server()
 {
 	// Fermeture du socket serveur
-	close(sockfd);
+	if (sockfd != -1)
+		close(sockfd);
 
 	// Suppression des channels
 	for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); it++)
@@ -163,7 +173,7 @@ void	Server::acceptConnections()
 
 	if (sockIndex == MAX_CLIENTS)
 	{
-		std::cout << "Trop de clients connectés" << std::endl;
+		std::cerr << "Trop de clients connectés" << std::endl;
 		return;
 	}
 
