@@ -6,7 +6,7 @@
 /*   By: vimercie <vimercie@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/20 17:21:39 by vimercie          #+#    #+#             */
-/*   Updated: 2023/12/25 05:12:45 by vimercie         ###   ########lyon.fr   */
+/*   Updated: 2023/12/26 11:58:29 by vimercie         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	Server::quit(const IRCmsg& msg)
 {
 	Client	*client = msg.getClient();
 
-	std::cout << "Client " << client->getNickname() << " quit (" << msg.getTrailing() << ")" << std::endl;
+	std::cout << "Client " << client->getNickname() << " quit" << std::endl;
 
 	for (std::vector<Channel*>::const_iterator it = client->getChannels().begin(); it != client->getChannels().end(); ++it)
 		(*it)->sendToChannel(IRCmsg(client, user_id(client->getNickname(), client->getUsername()), "QUIT", msg.getParameters(), msg.getTrailing()).toString());
